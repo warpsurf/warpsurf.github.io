@@ -1,22 +1,1078 @@
-<!doctype html>
-<html lang="en-GB">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>WarpSurf</title>
-    <style>
-      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
-      main { min-height: 100vh; display: grid; place-items: center; padding: 2rem; }
-      h1 { margin: 0; font-size: 2.25rem; letter-spacing: -0.02em; }
-      p { margin: 0.5rem 0 0; opacity: 0.75; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <div>
-        <h1>Warpsurf</h1>
-        <p id="status"></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>warpsurf</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/common.css">
+  <style>
+    /* Hero Section */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem 2rem;
+      background: 
+        radial-gradient(ellipse at top right, var(--pale-orange) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom left, var(--pale-purple) 0%, transparent 50%),
+        var(--off-white);
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 600px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      background: var(--white);
+      border: 1px solid rgba(155, 125, 212, 0.15);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .hero-logo-icon {
+      width: 80px;
+      height: 80px;
+      margin-top: 8px;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto 1.25rem;
+      line-height: 1.5;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .chrome-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Three Columns Section */
+    .three-columns {
+      padding: 2rem 2rem 3rem;
+      background: 
+        radial-gradient(ellipse at center, var(--pale-purple) 0%, transparent 60%),
+        var(--off-white);
+    }
+
+    .columns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @media (max-width: 768px) {
+      .columns-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .column-box {
+      background: var(--white);
+      border-radius: 8px;
+      border: 1px solid rgba(155, 125, 212, 0.1);
+      overflow: hidden;
+    }
+
+    .column-header {
+      padding: 0.35rem 0.6rem;
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-align: center;
+      background: var(--pale-purple);
+      border-bottom: 1px solid rgba(155, 125, 212, 0.1);
+    }
+
+    .column-header-purple {
+      background: var(--pale-purple);
+      border-bottom: 1px solid rgba(155, 125, 212, 0.15);
+    }
+
+    .column-header-blue {
+      background: #e3f2fd;
+      border-bottom: 1px solid rgba(66, 165, 245, 0.2);
+    }
+
+    .column-header-green {
+      background: #e8f5e9;
+      border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+    }
+
+    .column-header-orange {
+      background: var(--pale-orange);
+      border-bottom: 1px solid rgba(229, 169, 138, 0.2);
+    }
+
+    .column-body {
+      padding: 0.75rem 1rem;
+    }
+
+    .column-body p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .column-box-wide {
+      grid-column: span 3;
+    }
+
+    @media (max-width: 768px) {
+      .column-box-wide {
+        grid-column: span 1;
+      }
+    }
+
+    /* Features Section */
+    .features {
+      padding: 2.5rem 2rem;
+      background: var(--white);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-card {
+      border-radius: 6px;
+      background: var(--off-white);
+      border: 1px solid rgba(155, 125, 212, 0.08);
+      overflow: hidden;
+    }
+
+    .feature-header {
+      padding: 0.5rem 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .feature-header:hover {
+      background: var(--pale-purple);
+    }
+
+    .feature-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .feature-card h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .feature-toggle {
+      font-size: 0.5rem;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+      position: absolute;
+      right: 0.5rem;
+    }
+
+    .feature-card.expanded .feature-toggle {
+      transform: rotate(180deg);
+    }
+
+    .feature-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .feature-card.expanded .feature-content {
+      max-height: 120px;
+    }
+
+    .feature-content p {
+      padding: 0 0.6rem 0.6rem;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* CTA Section */
+    .cta {
+      padding: 2.5rem 2rem;
+      background: 
+        radial-gradient(ellipse at center, var(--pale-orange) 0%, transparent 60%),
+        var(--off-white);
+    }
+
+    .cta-box {
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .cta-box h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    /* Swimming Fish - Top-down pool view */
+    .fish-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 150;
+      overflow: hidden;
+    }
+
+    .fish {
+      position: absolute;
+      opacity: 0.42;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.06));
+      will-change: transform, left, top;
+    }
+
+    .fish svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Fluid, peaceful tail motion */
+    .fish .tail {
+      transform-origin: 50% 0%;
+      animation: tail-flow var(--tail-speed, 1.2s) ease-in-out infinite;
+    }
+
+    @keyframes tail-flow {
+      0% { transform: rotate(0deg) scaleX(1); }
+      25% { transform: rotate(3deg) scaleX(0.97); }
+      50% { transform: rotate(0deg) scaleX(1); }
+      75% { transform: rotate(-3deg) scaleX(0.97); }
+      100% { transform: rotate(0deg) scaleX(1); }
+    }
+
+    /* Feature grid for 10 items - 5 columns */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 1100px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    /* Example Tasks Section */
+    .examples {
+      padding: 6rem 2rem;
+      background: var(--white);
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+
+    .example-card {
+      background: var(--off-white);
+      border: 1px solid rgba(155, 125, 212, 0.1);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .example-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(155, 125, 212, 0.1);
+      border-color: var(--accent-purple);
+    }
+
+    .example-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .example-card p {
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Providers Section */
+    .providers {
+      padding: 5rem 2rem;
+      background: 
+        radial-gradient(ellipse at top left, var(--pale-orange) 0%, transparent 50%),
+        var(--off-white);
+    }
+
+    .providers .section-header {
+      margin-bottom: 3rem;
+    }
+
+    .provider-logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .provider-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .provider-logo:hover {
+      opacity: 1;
+    }
+
+    .provider-logo svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .provider-logo span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* Demo Section */
+    .demo {
+      padding: 2.5rem 2rem;
+      background: 
+        radial-gradient(ellipse at bottom right, var(--pale-purple) 0%, transparent 50%),
+        var(--off-white);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @media (max-width: 700px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .demo-card {
+      background: var(--white);
+      border: 1px solid rgba(155, 125, 212, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .demo-card:hover {
+      box-shadow: 0 4px 12px rgba(155, 125, 212, 0.1);
+    }
+
+    .demo-gif {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+    }
+
+    .demo-label {
+      padding: 0.5rem 0.75rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .demo-speed {
+      font-size: 0.6rem;
+      font-weight: 500;
+      background: var(--pale-purple);
+      color: var(--accent-purple);
+      padding: 0.15rem 0.4rem;
+      border-radius: 100px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        padding: 5rem 1.5rem 1.5rem;
+      }
+
+      .three-columns, .demo, .features, .cta {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Swimming Fish - Top-down pool view (randomized by JavaScript) -->
+  <div class="fish-container" id="fish-container"></div>
+  
+  <script>
+    // Fish swimming with wrap-around movement
+    // Wait for page to fully load so we get accurate page dimensions
+    window.addEventListener('load', function() {
+      const container = document.getElementById('fish-container');
+      const numFish =20;
+      const fishData = [];
+      
+      const colors = [
+        { body: '#e5a98a', stripe: '#d4896a', highlight: '#f0c4a8' },
+        { body: '#a48cd0', stripe: '#8a70b8', highlight: '#c4b0e8' },
+        { body: '#d4a5b0', stripe: '#c08090', highlight: '#e8c8d0' },
+        { body: '#b49ddb', stripe: '#8a70b8', highlight: '#d4c4ed' },
+        { body: '#c9a0c9', stripe: '#a080a0', highlight: '#e0c8e0' },
+        { body: '#edb89e', stripe: '#d4896a', highlight: '#f5d4c0' },
+      ];
+
+      function createFishSVG(color) {
+        return `
+          <svg viewBox="0 0 30 50" fill="none">
+            <ellipse cx="15" cy="20" rx="10" ry="17" fill="${color.body}"/>
+            <ellipse cx="15" cy="18" rx="3" ry="11" fill="${color.stripe}" opacity="0.5"/>
+            <polygon class="tail" points="15,37 5,47 25,47" fill="${color.body}"/>
+            <ellipse cx="15" cy="6" rx="6" ry="4" fill="${color.highlight}" opacity="0.4"/>
+          </svg>
+        `;
+      }
+
+      // Get fixed page dimensions ONCE at load time
+      const bounds = {
+        width: document.documentElement.scrollWidth,
+        height: document.documentElement.scrollHeight
+      };
+      
+      const buffer = 80;
+
+      // Set container to exact page size
+      container.style.width = bounds.width + 'px';
+      container.style.height = bounds.height + 'px';
+
+      // Initialize fish across the ENTIRE page
+      for (let i = 0; i < numFish; i++) {
+        const size = 28 + Math.random() * 24;
+        const direction = Math.random() * 360;
+        const dirRad = direction * Math.PI / 180;
+        const baseSpeed = 0.3 + Math.random() * 0.4;
+        const tailSpeed = 1.0 + Math.random() * 1.0;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const opacity = 0.3 + Math.random() * 0.2;
+
+        const x = Math.random() * bounds.width;
+        const y = Math.random() * bounds.height;
+
+        const vx = Math.sin(dirRad) * baseSpeed;
+        const vy = -Math.cos(dirRad) * baseSpeed;
+
+        const fish = document.createElement('div');
+        fish.className = 'fish';
+        fish.innerHTML = createFishSVG(color);
+        fish.style.cssText = `
+          --tail-speed: ${tailSpeed}s;
+          width: ${size}px;
+          height: ${size * 1.5}px;
+          transform: rotate(${direction}deg);
+          opacity: ${opacity};
+          left: ${x}px;
+          top: ${y}px;
+        `;
+
+        container.appendChild(fish);
+
+        fishData.push({
+          el: fish,
+          x: x,
+          y: y,
+          vx: vx,
+          vy: vy,
+          size: size,
+          baseSpeed: baseSpeed,
+          direction: direction
+        });
+      }
+
+      // Food system
+      const attractionRadius = 300; // pixels - fish within this radius are attracted
+      const eatRadius = 8; // pixels - mouth must be close to food
+      const baseTurnSpeed = 0.02; // base turn speed
+      const activeFood = []; // track all food pieces
+      
+      function createFood(x, y) {
+        // Create small food pellet
+        const foodEl = document.createElement('div');
+        foodEl.className = 'fish-food';
+        foodEl.style.cssText = `
+          position: absolute;
+          left: ${x}px;
+          top: ${y}px;
+          width: 5px;
+          height: 5px;
+          background: #e8b868;
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+          z-index: 51;
+        `;
+        container.appendChild(foodEl);
+
+        // Add to active food list
+        const food = { x: x, y: y, el: foodEl };
+        activeFood.push(food);
+      }
+
+      function removeFood(food) {
+        const index = activeFood.indexOf(food);
+        if (index > -1) {
+          activeFood.splice(index, 1);
+          food.el.remove();
+        }
+      }
+
+      function getMouthPosition(fish) {
+        // Fish mouth is at the front (head)
+        const dirRad = fish.direction * Math.PI / 180;
+        const mouthOffset = fish.size * 0.7; // mouth at very front
+        return {
+          x: fish.x + Math.sin(dirRad) * mouthOffset,
+          y: fish.y - Math.cos(dirRad) * mouthOffset
+        };
+      }
+
+      function findNearestFood(fish) {
+        let nearest = null;
+        let nearestDist = Infinity;
+        
+        activeFood.forEach(food => {
+          const dx = food.x - fish.x;
+          const dy = food.y - fish.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist < attractionRadius && dist < nearestDist) {
+            nearest = food;
+            nearestDist = dist;
+          }
+        });
+        
+        return nearest;
+      }
+
+      // Normalize angle to -180 to 180
+      function normalizeAngle(angle) {
+        while (angle > 180) angle -= 360;
+        while (angle < -180) angle += 360;
+        return angle;
+      }
+
+      // Add food on click (non-interactive areas only)
+      document.addEventListener('click', function(e) {
+        // Check if click was on an interactive element
+        const interactive = e.target.closest('a, button, input, select, textarea, [onclick], .btn');
+        if (interactive) return;
+        
+        // Get click position relative to page (not viewport)
+        const x = e.pageX;
+        const y = e.pageY;
+        
+        // Only place food within page bounds
+        if (x >= 0 && x <= bounds.width && y >= 0 && y <= bounds.height) {
+          createFood(x, y);
+        }
+      });
+
+      // Animation loop
+      let lastTime = performance.now();
+      
+      function animate(currentTime) {
+        // Cap deltaTime to prevent huge jumps when tab was inactive
+        const rawDelta = (currentTime - lastTime) / 16.67;
+        const deltaTime = Math.min(rawDelta, 2); // max 2 frames worth of movement
+        lastTime = currentTime;
+
+        fishData.forEach(fish => {
+          // Find nearest food and gradually turn towards it
+          const nearestFood = findNearestFood(fish);
+          if (nearestFood) {
+            const dx = nearestFood.x - fish.x;
+            const dy = nearestFood.y - fish.y;
+            const distToFood = Math.sqrt(dx * dx + dy * dy);
+            const targetAngle = Math.atan2(dx, -dy) * 180 / Math.PI;
+            
+            // Adaptive turn speed: faster when closer to food
+            // This prevents wide circling - fish tighten their turn as they approach
+            const proximityFactor = Math.max(0.5, 1 - (distToFood / attractionRadius));
+            const turnSpeed = baseTurnSpeed + (proximityFactor * 0.08);
+            
+            // Gradually turn towards food (smooth rotation)
+            let angleDiff = normalizeAngle(targetAngle - fish.direction);
+            fish.direction += angleDiff * turnSpeed * deltaTime;
+            fish.direction = normalizeAngle(fish.direction);
+            
+            // Update velocity based on current direction
+            // Slow down slightly when close for better accuracy
+            const dirRad = fish.direction * Math.PI / 180;
+            const speedFactor = distToFood < 50 ? 0.8 : 1.3;
+            const chaseSpeed = fish.baseSpeed * speedFactor;
+            fish.vx = Math.sin(dirRad) * chaseSpeed;
+            fish.vy = -Math.cos(dirRad) * chaseSpeed;
+            
+            // Update rotation
+            fish.el.style.transform = `rotate(${fish.direction}deg)`;
+          } else {
+            // Gradually return to normal speed when no food nearby
+            const currentSpeed = Math.sqrt(fish.vx * fish.vx + fish.vy * fish.vy);
+            if (currentSpeed > fish.baseSpeed * 1.01) {
+              const ratio = fish.baseSpeed / currentSpeed;
+              fish.vx += (fish.vx * ratio - fish.vx) * 0.01;
+              fish.vy += (fish.vy * ratio - fish.vy) * 0.01;
+              
+              // Update direction to match velocity
+              const dirRad = Math.atan2(fish.vx, -fish.vy);
+              fish.direction = dirRad * 180 / Math.PI;
+              fish.el.style.transform = `rotate(${fish.direction}deg)`;
+            }
+          }
+
+          // Update position
+          fish.x += fish.vx * deltaTime;
+          fish.y += fish.vy * deltaTime;
+
+          // Check if mouth passes over food
+          const mouth = getMouthPosition(fish);
+          for (let i = activeFood.length - 1; i >= 0; i--) {
+            const food = activeFood[i];
+            const dx = mouth.x - food.x;
+            const dy = mouth.y - food.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            // Mouth must be close enough to eat
+            if (dist < eatRadius) {
+              removeFood(food);
+              break;
+            }
+          }
+
+          // Wrap around horizontally
+          if (fish.x > bounds.width + buffer) {
+            fish.x = -buffer;
+          } else if (fish.x < -buffer) {
+            fish.x = bounds.width + buffer;
+          }
+
+          // Wrap around vertically
+          if (fish.y > bounds.height + buffer) {
+            fish.y = -buffer;
+          } else if (fish.y < -buffer) {
+            fish.y = bounds.height + buffer;
+          }
+
+          // Apply position
+          fish.el.style.left = fish.x + 'px';
+          fish.el.style.top = fish.y + 'px';
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+
+      // Update bounds on resize
+      window.addEventListener('resize', function() {
+        bounds.width = document.documentElement.scrollWidth;
+        bounds.height = document.documentElement.scrollHeight;
+        container.style.width = bounds.width + 'px';
+        container.style.height = bounds.height + 'px';
+      });
+    });
+
+    // Feature row expansion - expands all features on the same row
+    function toggleFeatureRow(clickedCard) {
+      const grid = clickedCard.closest('.features-grid');
+      const cards = Array.from(grid.querySelectorAll('.feature-card'));
+      const clickedIndex = cards.indexOf(clickedCard);
+      
+      // Get computed grid columns
+      const gridStyle = window.getComputedStyle(grid);
+      const columns = gridStyle.gridTemplateColumns.split(' ').length;
+      
+      // Calculate which row this card is in
+      const rowStart = Math.floor(clickedIndex / columns) * columns;
+      const rowEnd = Math.min(rowStart + columns, cards.length);
+      
+      // Check if we're expanding or collapsing
+      const isExpanding = !clickedCard.classList.contains('expanded');
+      
+      // Toggle all cards in this row
+      for (let i = rowStart; i < rowEnd; i++) {
+        if (isExpanding) {
+          cards[i].classList.add('expanded');
+        } else {
+          cards[i].classList.remove('expanded');
+        }
+      }
+    }
+  </script>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="logo"><img src="images/favicon.png" alt="warpsurf" class="logo-icon">warpsurf</a>
+    <div class="nav-links">
+      <a href="#demo">demos</a>
+      <a href="#features">features</a>
+      <a href="docs.html">documentation</a>
+      <a href="https://github.com/warpsurf/warpsurf" target="_blank">github</a>
+      <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank">chrome store</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1><img src="images/favicon.png" alt="" class="hero-logo-icon">warpsurf</h1>
+      <p>An open-source AI-powered browser copilot that runs locally in Chrome. Chat, search, or deploy agents to help you surf the web.</p>
+      <div class="hero-buttons">
+        <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank" class="btn btn-primary">
+          <svg class="chrome-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          Add to Chrome
+        </a>
+        <a href="https://github.com/warpsurf/warpsurf" target="_blank" class="btn btn-github">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Build from Source
+        </a>
       </div>
-    </main>
-  </body>
+    </div>
+  </section>
+
+  <!-- Three Columns Section -->
+  <section class="three-columns">
+    <div class="container">
+      <div class="columns-grid">
+        <!-- Vision Column -->
+        <div class="column-box">
+          <div class="column-header column-header-purple">Vision</div>
+          <div class="column-body">
+            <p>The browser is the door to the internet—it should be open and accessible. Warpsurf provides a model-agnostic AI copilot that can make complex workflows easier while keeping your data local.</p>
+          </div>
+        </div>
+
+        <!-- Aspiration Column -->
+        <div class="column-box">
+          <div class="column-header column-header-blue">Warpsurfing</div>
+          <div class="column-body">
+            <p>For browser automation to be useful, it needs to be fast—enabling "warpsurfing". We're not there yet, but this is the goal. With faster models and parallel execution, we can get there.</p>
+          </div>
+        </div>
+
+        <!-- Community Column -->
+        <div class="column-box">
+          <div class="column-header column-header-green">Community</div>
+          <div class="column-body">
+            <p>Warpsurf has been built as an open source community tool open to contributions and critique. We want to grow the browser automation ecosystem by finding bugs, useful features, and new use cases.</p>
+          </div>
+        </div>
+
+        <!-- Safety Column -->
+        <div class="column-box column-box-wide">
+          <div class="column-header column-header-orange">Safety</div>
+          <div class="column-body">
+            <p>Warpsurf is a research project under active development. Browser automation carries inherent risks: agents may make mistakes and the web can be dangerous. Monitor agents while they work, use capped API keys, and use warpsurf at your own risk.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Section -->
+  <section class="demo" id="demo">
+    <div class="container">
+      <div class="section-header">
+        <h2>Demos</h2>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-card">
+          <img src="images/agent_2x.gif" alt="Agent workflow demo" class="demo-gif" loading="lazy">
+          <div class="demo-label">🤖 agent workflow <span class="demo-speed">2x playback speed</span></div>
+        </div>
+        <div class="demo-card">
+          <img src="images/magent_2x.gif" alt="Multi-agent workflow demo" class="demo-gif" loading="lazy">
+          <div class="demo-label">🤖🤖 multi-agent workflow <span class="demo-speed">2x playback speed</span></div>
+        </div>
+        <div class="demo-card">
+          <img src="images/chat+searchx2.gif" alt="Chat and search workflow demo" class="demo-gif" loading="lazy">
+          <div class="demo-label">🧠🔍 chat & search <span class="demo-speed">2x playback speed</span></div>
+        </div>
+        <div class="demo-card">
+          <img src="images/menu_2x.gif" alt="Panel and options menu demo" class="demo-gif" loading="lazy">
+          <div class="demo-label">⚙️ panel & options <span class="demo-speed">2x playback speed</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Features</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">🚦</div>
+            <h3>smart router</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>queries are automatically triaged to the right workflow—chat, search, or agent—for optimal results.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">🌐</div>
+            <h3>autonomous agent</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>navigates and interacts with any webpage on your behalf, completing complex multi-step tasks.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">👥</div>
+            <h3>multi-agent</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>orchestrate multiple agents in parallel for complex workflows and parallelisable research tasks.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">🔍</div>
+            <h3>fast search</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>low latency web-augmented chat that finds and summarizes information from across the web.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">🔒</div>
+            <h3>privacy first</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>runs locally in your browser. your data never leaves your machine—your browsing stays with you.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">⚡</div>
+            <h3>real-time monitor</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>watch agents work in real-time with full transparency. see every action and decision as it happens.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">📑</div>
+            <h3>tab management</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>agents operate using their own tab groups, keeping your browsing organized and separate.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">📈</div>
+            <h3>usage tracking</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>real-time token and cost statistics so you always know exactly what you're spending.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">💰</div>
+            <h3>live pricing</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>incorporate live pricing data from providers for accurate cost predictions.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">🧠</div>
+            <h3>conversational chat</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>natural chat interface powered by leading llms for quick questions.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">📜</div>
+            <h3>history context</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>optionally use your browser history to improve agent performance.</p>
+          </div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
+            <div class="feature-icon">⏱️</div>
+            <h3>task estimation</h3>
+            <span class="feature-toggle">▼</span>
+          </div>
+          <div class="feature-content">
+            <p>preview task duration and cost before the agent starts working.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="cta-box">
+      <h2>Get Started</h2>
+      <div class="cta-buttons">
+        <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank" class="btn btn-primary">
+          <svg class="chrome-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+          Chrome
+        </a>
+        <a href="docs.html" class="btn btn-docs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+          </svg>
+          Documentation
+        </a>
+        <a href="https://github.com/warpsurf/warpsurf" target="_blank" class="btn btn-github">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content footer-centered">
+      <span class="footer-logo"><img src="images/favicon.png" alt="" class="footer-logo-icon">warpsurf</span>
+      <span class="footer-divider">—</span>
+      <span class="footer-copyright">© 2025 Warpsurf. All rights reserved.</span>
+    </div>
+  </footer>
+
+</body>
 </html>

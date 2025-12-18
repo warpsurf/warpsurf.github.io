@@ -1,0 +1,326 @@
+/* ==========================================================================
+   Warpsurf Common Styles
+   Shared styles across all landing pages
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Variables
+   -------------------------------------------------------------------------- */
+:root {
+  --pale-orange: #FEF0E6;
+  --pale-purple: #F3EEFA;
+  --accent-orange: #e5a98a;
+  --accent-purple: #a48cd0;
+  --text-dark: #2D2A3E;
+  --text-muted: #6B6880;
+  --white: #FFFFFF;
+  --off-white: #FDFCFB;
+}
+
+/* --------------------------------------------------------------------------
+   Reset & Base
+   -------------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-dark);
+  line-height: 1.6;
+  background: var(--off-white);
+}
+
+/* --------------------------------------------------------------------------
+   Navigation
+   -------------------------------------------------------------------------- */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(253, 252, 251, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  border-bottom: 1px solid rgba(155, 125, 212, 0.1);
+}
+
+.logo {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  margin-top: 4px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--accent-purple);
+}
+
+.nav-links a.active {
+  color: var(--accent-purple);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent-purple);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: #9578c0;
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--text-dark);
+  border: 1px solid rgba(155, 125, 212, 0.3);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-purple);
+  background: var(--pale-purple);
+}
+
+.btn-github {
+  background: var(--pale-orange);
+  border: 1px solid rgba(229, 169, 138, 0.3);
+}
+
+.btn-github:hover {
+  border-color: var(--accent-orange);
+  background: #fce5d8;
+}
+
+.btn-docs {
+  background: #e8f5e9;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.btn-docs:hover {
+  border-color: #4caf50;
+  background: #c8e6c9;
+}
+
+.btn-icon-only {
+  padding: 0.6rem;
+  min-width: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Container
+   -------------------------------------------------------------------------- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Section Header
+   -------------------------------------------------------------------------- */
+.section-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.section-header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+footer {
+  padding: 3rem 2rem;
+  background: var(--off-white);
+  border-top: 1px solid rgba(155, 125, 212, 0.1);
+  position: relative;
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-centered {
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-logo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.footer-logo-icon {
+  width: 34px;
+  height: 34px;
+  margin-top: 4px;
+}
+
+.footer-divider {
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+.footer-copyright {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   Info & Warning Boxes
+   -------------------------------------------------------------------------- */
+.warning-box {
+  background: rgba(229, 169, 138, 0.12);
+  border-left: 3px solid var(--accent-orange);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.5rem 0;
+}
+
+.warning-box p {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+.warning-box strong {
+  color: var(--text-dark);
+}
+
+.info-box {
+  background: var(--pale-purple);
+  border-left: 3px solid var(--accent-purple);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.5rem 0;
+}
+
+.info-box p {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------------------------
+   Code Blocks
+   -------------------------------------------------------------------------- */
+.code-block {
+  background: var(--pale-purple);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  border: 1px solid rgba(155, 125, 212, 0.15);
+}
+
+.code-block code {
+  display: block;
+  white-space: pre;
+}
+
+.inline-code {
+  background: var(--pale-purple);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: 0.85em;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive - Navigation
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  nav {
+    padding: 0.75rem 1rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
