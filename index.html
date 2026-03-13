@@ -33,19 +33,6 @@
       overflow: hidden;
     }
 
-    .hero-enso {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 380px;
-      height: 380px;
-      color: var(--border);
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    [data-theme="dark"] .hero-enso { opacity: 0.25; }
 
     .hero-content { position: relative; z-index: 2; max-width: 520px; }
 
@@ -76,6 +63,109 @@
       gap: 0.6rem;
       justify-content: center;
       flex-wrap: wrap;
+    }
+
+    /* --- Shipping graph ------------------------------------------------- */
+    .shipping {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+    }
+
+    .shipping-title {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+    }
+
+    .shipping-streak-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .shipping-streak-label {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .shipping-streak-label span {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .shipping-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .shipping-day {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: var(--border-subtle);
+      position: relative;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .shipping-day.shipped {
+      background: var(--accent);
+    }
+
+    .shipping-day.today {
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--accent);
+    }
+
+    a.shipping-day {
+      text-decoration: none;
+      display: block;
+    }
+
+    .shipping-day.shipped:hover {
+      transform: scale(1.3);
+      cursor: pointer;
+    }
+
+    .shipping-day .shipping-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: var(--bg);
+      font-size: 0.65rem;
+      font-family: var(--font-sans);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .shipping-day:hover .shipping-tooltip {
+      display: block;
+    }
+
+    .shipping-label {
+      font-size: 0.65rem;
+      color: var(--text-tertiary);
+      margin-top: 0.15rem;
     }
 
     /* --- Philosophy ----------------------------------------------------- */
@@ -309,11 +399,6 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-enso" aria-hidden="true">
-      <svg viewBox="0 0 200 200" fill="none">
-        <path d="M100 12 C152 12 188 48 188 100 C188 152 152 188 100 188 C48 188 12 152 12 100 C12 52 44 18 88 12" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-      </svg>
-    </div>
     <div class="hero-content fade-in">
       <img src="images/favicon.png" alt="" class="hero-logo-icon">
       <h1>warpsurf</h1>
@@ -326,6 +411,7 @@
           <i data-lucide="github"></i> Source
         </a>
       </div>
+      <div class="shipping" id="shipping"></div>
     </div>
   </section>
 
@@ -463,6 +549,7 @@
   </footer>
 
   <!-- Scripts -->
+  <script src="shipments.js"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   <script>
     lucide.createIcons();
@@ -488,6 +575,82 @@
     }, { threshold: 0.08 });
 
     document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+
+    /* Shipping graph */
+    (function() {
+      var data = window.SHIPMENTS;
+      var container = document.getElementById('shipping');
+      if (!data || !container || !data.shipments.length) return;
+
+      var shipMap = {};
+      data.shipments.forEach(function(s) { shipMap[s.date] = s; });
+
+      var start = new Date(data.start + 'T00:00:00');
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      var streak = 0;
+      var d = new Date(today);
+      while (d >= start) {
+        var key = d.toISOString().slice(0, 10);
+        if (shipMap[key]) { streak++; d.setDate(d.getDate() - 1); }
+        else break;
+      }
+
+      var title = document.createElement('div');
+      title.className = 'shipping-title';
+      title.textContent = 'Shipping updates daily';
+      container.appendChild(title);
+
+      var streakRow = document.createElement('div');
+      streakRow.className = 'shipping-streak-row';
+
+      var label = document.createElement('div');
+      label.className = 'shipping-streak-label';
+      label.innerHTML = 'Streak: <span>' + streak + '</span>';
+      streakRow.appendChild(label);
+
+      var row = document.createElement('div');
+      row.className = 'shipping-row';
+
+      var cursor = new Date(start);
+      while (cursor <= today) {
+        var key = cursor.toISOString().slice(0, 10);
+        var ship = shipMap[key];
+        var box = document.createElement('div');
+        box.className = 'shipping-day';
+        if (ship) box.classList.add('shipped');
+        if (key === today.toISOString().slice(0, 10)) box.classList.add('today');
+
+        if (ship) {
+          var tip = document.createElement('span');
+          tip.className = 'shipping-tooltip';
+          var parts = ship.date.split('-');
+          tip.textContent = parts[2] + '/' + parts[1] + ': ' + ship.feature;
+          box.appendChild(tip);
+
+          if (ship.tweet) {
+            var link = document.createElement('a');
+            link.href = ship.tweet;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.className = 'shipping-day shipped';
+            if (key === today.toISOString().slice(0, 10)) link.classList.add('today');
+            link.appendChild(tip);
+            row.appendChild(link);
+            cursor.setDate(cursor.getDate() + 1);
+            continue;
+          }
+        }
+
+        row.appendChild(box);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+
+      streakRow.appendChild(row);
+      container.appendChild(streakRow);
+
+    })();
 
     /* Fish — reduced, muted, zen */
     window.addEventListener('load', function() {
