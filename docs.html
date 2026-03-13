@@ -1,62 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>warpsurf — documentation</title>
+  <meta name="description" content="Documentation for warpsurf, an open-source AI browser copilot for Chrome.">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/common.css">
+  <script>
+    (function() {
+      var s = localStorage.getItem('theme');
+      var p = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', s || p);
+    })();
+  </script>
   <style>
-    /* Documentation Styles */
-    .docs-container {
-      max-width: 900px;
+    /* --- Docs layout ---------------------------------------------------- */
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 6rem 2rem 4rem;
+      padding: calc(var(--nav-height) + 2.5rem) 2rem 4rem;
+      min-height: 100vh;
     }
 
-    .docs-header {
-      margin-bottom: 3rem;
-      padding-bottom: 2rem;
-      border-bottom: 1px solid rgba(155, 125, 212, 0.15);
+    /* --- Sidebar -------------------------------------------------------- */
+    .docs-sidebar {
+      position: sticky;
+      top: calc(var(--nav-height) + 1.5rem);
+      align-self: start;
+      max-height: calc(100vh - var(--nav-height) - 3rem);
+      overflow-y: auto;
     }
 
-    .docs-header h1 {
-      font-size: 2rem;
+    .docs-sidebar::-webkit-scrollbar { width: 0; }
+
+    .sidebar-label {
+      font-family: var(--font-sans);
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .sidebar-links a {
+      display: block;
+      padding: 0.35rem 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all var(--transition);
+      border-left: 2px solid transparent;
+    }
+
+    .sidebar-links a:hover,
+    .sidebar-links a.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-left-color: var(--accent);
+    }
+
+    /* --- Mobile TOC toggle ---------------------------------------------- */
+    .docs-toc-toggle {
+      display: none;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .docs-toc-toggle svg {
+      width: 14px;
+      height: 14px;
+      vertical-align: middle;
+      margin-right: 0.4rem;
+    }
+
+    /* --- Main content --------------------------------------------------- */
+    .docs-main h1 {
+      font-size: 1.8rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
     }
 
-    .docs-header p {
-      color: var(--text-muted);
-      font-size: 1rem;
+    .docs-main .docs-subtitle {
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
-    /* Sections */
+    /* --- Sections ------------------------------------------------------- */
     .docs-section {
       margin-bottom: 3rem;
+      scroll-margin-top: calc(var(--nav-height) + 1.5rem);
     }
 
     .docs-section h2 {
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--text-dark);
+      margin-bottom: 0.9rem;
+      padding-left: 0.75rem;
+      border-left: 2px solid var(--accent);
     }
 
     .docs-section h3 {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
-      margin: 1.5rem 0 0.75rem;
-      color: var(--text-dark);
+      margin: 1.5rem 0 0.6rem;
     }
 
     .docs-section p {
-      color: var(--text-muted);
-      margin-bottom: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.9rem;
       line-height: 1.7;
+      font-size: 0.9rem;
     }
 
     .docs-section ul {
@@ -65,30 +147,42 @@
     }
 
     .docs-section ul li {
-      color: var(--text-muted);
-      padding: 0.4rem 0;
-      padding-left: 1.5rem;
+      color: var(--text-secondary);
+      padding: 0.35rem 0;
+      padding-left: 1.4rem;
       position: relative;
+      font-size: 0.9rem;
+      line-height: 1.6;
     }
 
     .docs-section ul li::before {
       content: "→";
       position: absolute;
       left: 0;
-      color: var(--accent-purple);
+      color: var(--accent);
+      font-size: 0.85rem;
     }
 
     .docs-section ol {
       margin-bottom: 1rem;
-      padding-left: 1.5rem;
+      padding-left: 1.4rem;
     }
 
     .docs-section ol li {
-      color: var(--text-muted);
-      padding: 0.4rem 0;
+      color: var(--text-secondary);
+      padding: 0.35rem 0;
+      font-size: 0.9rem;
     }
 
-    /* Feature table */
+    .docs-section a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .docs-section a:hover { text-decoration: underline; }
+
+    /* --- Feature table -------------------------------------------------- */
     .feature-table {
       width: 100%;
       border-collapse: collapse;
@@ -98,109 +192,138 @@
     .feature-table th,
     .feature-table td {
       text-align: left;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid rgba(155, 125, 212, 0.1);
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
     }
 
     .feature-table th {
       font-weight: 600;
-      color: var(--text-dark);
-      background: var(--pale-purple);
+      color: var(--text);
+      background: var(--accent-soft);
+      font-size: 0.8rem;
     }
 
-    .feature-table td {
-      color: var(--text-muted);
-    }
+    .feature-table td { color: var(--text-secondary); }
 
-    .feature-table tr:hover td {
-      background: rgba(243, 238, 250, 0.5);
-    }
+    .feature-table tr:hover td { background: var(--accent-soft); }
 
-    /* Links */
-    .docs-section a {
-      color: var(--accent-purple);
-      text-decoration: none;
+    .feature-name-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       font-weight: 500;
+      color: var(--text);
     }
 
-    .docs-section a:hover {
-      text-decoration: underline;
+    .feature-name-cell svg {
+      width: 13px;
+      height: 13px;
+      color: var(--accent);
+      stroke-width: 1.75;
+      flex-shrink: 0;
     }
 
-    /* Footer - page specific overrides */
-    footer {
-      padding: 2rem;
-    }
-
-    .footer-content {
-      max-width: 900px;
-    }
-
-    .footer-logo::after {
-      content: "—";
-      margin-left: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-
-    /* Responsive */
+    /* --- Responsive ----------------------------------------------------- */
     @media (max-width: 768px) {
-      .docs-container {
-        padding: 5rem 1.5rem 3rem;
+      .docs-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding-top: calc(var(--nav-height) + 1.5rem);
       }
 
-      .docs-header h1 {
-        font-size: 1.6rem;
+      .docs-sidebar {
+        position: static;
+        max-height: none;
+        display: none;
       }
 
-      .feature-table {
-        font-size: 0.85rem;
-      }
+      .docs-sidebar.open { display: block; margin-bottom: 1rem; }
 
-      .feature-table th,
-      .feature-table td {
-        padding: 0.5rem;
-      }
+      .docs-toc-toggle { display: flex; align-items: center; }
+
+      .docs-main h1 { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
+  <!-- Nav -->
   <nav>
     <a href="index.html" class="logo"><img src="images/favicon.png" alt="warpsurf" class="logo-icon">warpsurf</a>
+    <div class="nav-overlay" onclick="toggleNav()"></div>
     <div class="nav-links">
-      <a href="index.html#demo">demos</a>
+      <a href="index.html#demos">demos</a>
       <a href="index.html#features">features</a>
       <a href="docs.html" class="active">documentation</a>
       <a href="https://github.com/warpsurf/warpsurf" target="_blank">github</a>
       <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank">chrome store</a>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="sun" class="theme-icon-sun"></i>
+        <i data-lucide="moon" class="theme-icon-moon"></i>
+      </button>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" style="display:flex;">
+        <i data-lucide="sun" class="theme-icon-sun"></i>
+        <i data-lucide="moon" class="theme-icon-moon"></i>
+      </button>
+      <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
     </div>
   </nav>
 
-  <div class="docs-container">
+  <div class="docs-layout">
 
-    <div class="docs-header">
+    <!-- Mobile TOC toggle -->
+    <button class="docs-toc-toggle" onclick="document.querySelector('.docs-sidebar').classList.toggle('open')">
+      <i data-lucide="list"></i> Table of Contents
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="docs-sidebar">
+      <div class="sidebar-label">Contents</div>
+      <ul class="sidebar-links">
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#usage">Usage</a></li>
+        <li><a href="#workflows">Workflows</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#agent-controls">Agent Controls</a></li>
+        <li><a href="#input">Input Methods</a></li>
+        <li><a href="#context">Context & History</a></li>
+        <li><a href="#cost">Cost Management</a></li>
+        <li><a href="#models">Model Compatibility</a></li>
+        <li><a href="#settings">Settings</a></li>
+        <li><a href="#tips">Tips</a></li>
+        <li><a href="#contributing">Contributing</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="docs-main">
+
       <h1>Documentation</h1>
-    </div>
+      <p class="docs-subtitle">Everything you need to get started with warpsurf.</p>
 
-    <!-- Warning -->
-    <div class="warning-box">
-      <p><strong>⚠️ Important:</strong> Warpsurf is an open source research project. Browser automation carries inherent risks. Monitor agents while they work and use capped API keys with spending limits. Use warpsurf at your own risk.</p>
-    </div>
+      <!-- Warning -->
+      <div class="warning-box">
+        <p><span class="warning-icon"><i data-lucide="triangle-alert"></i></span><strong>Important:</strong> Warpsurf is an open source research project. Browser automation carries inherent risks. Monitor agents while they work and use capped API keys with spending limits. Use warpsurf at your own risk.</p>
+      </div>
 
-    <!-- Installation -->
-    <section class="docs-section" id="installation">
-      <h2>Installation</h2>
+      <!-- Installation -->
+      <section class="docs-section" id="installation">
+        <h2>Installation</h2>
 
-      <h3>Chrome Web Store (Recommended)</h3>
-      <ol>
-        <li>Visit the <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank">Chrome Web Store</a></li>
-        <li>Click <strong>"Add to Chrome"</strong></li>
-        <li>Pin the extension for easy access</li>
-      </ol>
+        <h3>Chrome Web Store (Recommended)</h3>
+        <ol>
+          <li>Visit the <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank">Chrome Web Store</a></li>
+          <li>Click <strong>"Add to Chrome"</strong></li>
+          <li>Pin the extension for easy access</li>
+        </ol>
 
-      <h3>Manual Installation (Developer Mode)</h3>
-      <div class="code-block">
+        <h3>Manual Installation (Developer Mode)</h3>
+        <div class="code-block">
 <code># Clone the repository
 git clone https://github.com/warpsurf/warpsurf.git
 cd warpsurf
@@ -210,144 +333,223 @@ pnpm install
 
 # Build the extension
 pnpm build:store</code>
-      </div>
-      <p>Then in Chrome:</p>
-      <ol>
-        <li>Navigate to <span class="inline-code">chrome://extensions</span></li>
-        <li>Enable <strong>"Developer mode"</strong></li>
-        <li>Click <strong>"Load unpacked"</strong></li>
-        <li>Select the <span class="inline-code">dist</span> folder</li>
-      </ol>
-    </section>
+        </div>
+        <p>Then in Chrome:</p>
+        <ol>
+          <li>Navigate to <span class="inline-code">chrome://extensions</span></li>
+          <li>Enable <strong>"Developer mode"</strong></li>
+          <li>Click <strong>"Load unpacked"</strong></li>
+          <li>Select the <span class="inline-code">dist</span> folder</li>
+        </ol>
+      </section>
 
-    <!-- Usage -->
-    <section class="docs-section" id="usage">
-      <h2>Usage</h2>
-      <p>After installation, click the warpsurf icon in your browser toolbar to open the side panel. Add your API keys in the Options page and select your preferred models.</p>
+      <!-- Usage -->
+      <section class="docs-section" id="usage">
+        <h2>Usage</h2>
+        <p>After installation, click the warpsurf icon in your browser toolbar to open the side panel. Add your API keys in Settings and select your preferred model.</p>
+      </section>
 
-      <h3>Workflows</h3>
-      <p>Warpsurf supports several interaction modes:</p>
-      <ul>
-        <li><strong>Chat <span class="inline-code">/chat</span></strong> — conversational interface for quick questions</li>
-        <li><strong>Search <span class="inline-code">/search</span></strong> — web-grounded answers with sources</li>
-        <li><strong>Agent <span class="inline-code">/agent</span></strong> — autonomous browsing to complete tasks (use )</li>
-        <li><strong>Multi-Agent <span class="inline-code">/magent</span></strong> — parallel agents for complex workflows</li>
-      </ul>
+      <!-- Workflows -->
+      <section class="docs-section" id="workflows">
+        <h2>Workflows</h2>
+        <p>Warpsurf supports five interaction modes. The smart router automatically selects the best workflow, or you can force a specific mode with slash commands:</p>
+        <ul>
+          <li><strong>Auto</strong> — the smart router triages your query to the best workflow automatically</li>
+          <li><strong>Chat <span class="inline-code">/chat</span></strong> — conversational interface for quick questions, with streaming responses and session history</li>
+          <li><strong>Search <span class="inline-code">/search</span></strong> — web-grounded answers with sources, powered by provider-native search tools</li>
+          <li><strong>Agent <span class="inline-code">/agent</span></strong> — autonomous browsing agent that navigates, clicks, types, and scrolls to complete tasks</li>
+          <li><strong>Multi-Agent <span class="inline-code">/magent</span></strong> — orchestrate multiple agents in parallel for complex workflows and research tasks</li>
+          <li><strong>Tool</strong> — natural language settings control. Change models, temperature, vision mode, timeout, context tabs, and more through conversation</li>
+        </ul>
+      </section>
 
-    </section>
+      <!-- Features -->
+      <section class="docs-section" id="features">
+        <h2>Features</h2>
+        <table class="feature-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="feature-name-cell"><i data-lucide="route"></i> Smart Router</span></td><td>Queries are automatically triaged to the right workflow — chat, search, or agent</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="message-circle"></i> Chat</span></td><td>Conversational interface powered by leading LLMs</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="search"></i> Search</span></td><td>Low-latency web-augmented chat that finds and summarizes information from across the web</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="bot"></i> Agent</span></td><td>Autonomous browsing agent that navigates and interacts with any webpage</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="users"></i> Multi-Agent</span></td><td>Orchestrate multiple agents in parallel for complex workflows and research tasks</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="wrench"></i> Conversational Tools</span></td><td>Change models, temperature, vision, timeout, and context tabs through natural language</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="mic"></i> Voice Input</span></td><td>Speech-to-text via OpenAI Whisper or Google Gemini with optional auto-submit</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="paperclip"></i> Attachments</span></td><td>Drag-and-drop or paste images, text files, PDFs, and JSON (up to 4MB)</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="mouse-pointer-click"></i> Context Menus</span></td><td>Right-click to explain text, summarize pages, or analyze images</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="hand"></i> Take Control</span></td><td>Agents hand back control at critical junctures for your input</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="pause"></i> Pause & Resume</span></td><td>Pause running agents with optional instructions when resuming</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="message-square"></i> Live Follow-Up</span></td><td>Send instructions to a running agent without stopping, with queueable messages</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="octagon-x"></i> Emergency Stop</span></td><td>One-click stop for all running workflows</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="workflow"></i> Workflow Graph</span></td><td>Visual DAG of multi-agent subtasks with real-time node status</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="map"></i> Trajectory View</span></td><td>Timeline of agent actions grouped by site with visual markers</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="layout-dashboard"></i> Agent Manager</span></td><td>Dashboard with search, live tab previews, and task launch</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="app-window"></i> Tab Context</span></td><td>Manual or auto tab context with privacy controls</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="columns-2"></i> Tab Management</span></td><td>Agents operate in their own tab groups with optional cleanup</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="shield"></i> Privacy & Firewall</span></td><td>Runs locally with URL firewall for allow/deny domain control</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="star"></i> Favorites</span></td><td>Save, import, and reorder prompts for quick access</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="trending-up"></i> Usage Tracking</span></td><td>Real-time token and cost statistics per session, role, and model</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="coins"></i> Live Pricing</span></td><td>Live pricing data for accurate cost predictions</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="timer"></i> Task Estimation</span></td><td>Preview steps, duration, and cost before starting; switch models in preview</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="history"></i> History Context</span></td><td>Optionally use browser history with configurable time windows</td></tr>
+            <tr><td><span class="feature-name-cell"><i data-lucide="rotate-ccw"></i> Session Restore</span></td><td>Workflows persist and resume with buffered events on reopen</td></tr>
 
-    <!-- Features -->
-    <section class="docs-section" id="features">
-      <h2>Features</h2>
-      <table class="feature-table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>🔀 Router</td>
-            <td>Queries are automatically triaged to the right workflow</td>
-          </tr>
-          <tr>
-            <td>🧠 Chat</td>
-            <td>Conversational interface powered by leading LLMs</td>
-          </tr>
-          <tr>
-            <td>🔍 Search</td>
-            <td>Low latency search-grounded chat</td>
-          </tr>
-          <tr>
-            <td>🤖 Agent</td>
-            <td>Navigates and interacts with any webpage</td>
-          </tr>
-          <tr>
-            <td>🤖🤖 Multi-Agent</td>
-            <td>Orchestrate multiple agents for complex workflows</td>
-          </tr>
-          <tr>
-            <td>📑 Tab Management</td>
-            <td>Agents operate using their own tab groups</td>
-          </tr>
-          <tr>
-            <td>🔒 Privacy</td>
-            <td>Runs locally in your browser; your data stays with you</td>
-          </tr>
-          <tr>
-            <td>👁️ Monitor</td>
-            <td>Watch agents work in real-time with tab streaming</td>
-          </tr>
-          <tr>
-            <td>📈 Usage Tracking</td>
-            <td>Real-time token and cost statistics</td>
-          </tr>
-          <tr>
-            <td>💰 Live Pricing</td>
-            <td>Accurate cost predictions with live pricing data</td>
-          </tr>
-          <tr>
-            <td>🎮 Take Control</td>
-            <td>Agents pass control back to you at critical junctures</td>
-          </tr>
-          <tr>
-            <td>📜 History</td>
-            <td>Optionally use browser history to improve performance</td>
-          </tr>
-          <tr>
-            <td>⏱️ Task Estimation</td>
-            <td>Preview task duration and cost before starting</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+            <tr><td><span class="feature-name-cell"><i data-lucide="palette"></i> Themes</span></td><td>Dark, light, and auto (system preference)</td></tr>
+          </tbody>
+        </table>
+      </section>
 
-    <!-- Model Compatibility -->
-    <section class="docs-section" id="models">
-      <h2>Model Compatibility</h2>
-      <p>Warpsurf is compatible with leading LLM providers:</p>
-      <ul>
-        <li>OpenAI</li>
-        <li>Anthropic (Claude)</li>
-        <li>Google (Gemini)</li>
-        <li>xAI (Grok)</li>
-        <li>OpenRouter</li>
-        <li>Any OpenAI-compatible API</li>
-      </ul>
-    </section>
+      <!-- Agent Controls -->
+      <section class="docs-section" id="agent-controls">
+        <h2>Agent Controls</h2>
+        <p>Warpsurf provides several mechanisms for human-in-the-loop control:</p>
+        <ul>
+          <li><strong>Take Control</strong> — agents can request a handover at critical decision points</li>
+          <li><strong>Pause & Resume</strong> — pause a running agent at any time, optionally provide instructions when resuming</li>
+          <li><strong>Live Follow-Up</strong> — send additional instructions to a running agent without stopping it</li>
+          <li><strong>Emergency Stop</strong> — instantly cancel all running workflows with a single click</li>
+        </ul>
+      </section>
 
-    <!-- Tips -->
-    <section class="docs-section" id="tips">
-      <h2>Tips</h2>
-      <p>These Chrome extensions can improve agent performance by reducing interruptions:</p>
-      <ul>
-        <li><a href="https://chromewebstore.google.com/detail/recaptcha-solver-auto-cap/infdcenbdoibcacogknkjleclhnjdmfh" target="_blank">reCAPTCHA Solver</a> — automatically handles CAPTCHAs</li>
-        <li><a href="https://chromewebstore.google.com/detail/ad-blocker-stands-adblock/lgblnfidahcdcjddiepkckcfdhpknnjh" target="_blank">Ad Blocker</a> — removes ads and popups</li>
-      </ul>
-    </section>
+      <!-- Input Methods -->
+      <section class="docs-section" id="input">
+        <h2>Input Methods</h2>
+        <ul>
+          <li><strong>Text</strong> — type queries directly in the side panel chat input</li>
+          <li><strong>Voice</strong> — click the microphone button for speech-to-text via OpenAI Whisper or Google Gemini</li>
+          <li><strong>Attachments</strong> — drag-and-drop files and images, or paste from clipboard (images, text, PDF, JSON up to 4MB)</li>
+          <li><strong>Context Menus</strong> — right-click to "Explain this", "Summarize this page", or "Explain image"</li>
+          <li><strong>Slash Commands</strong> — prefix with <span class="inline-code">/chat</span>, <span class="inline-code">/search</span>, <span class="inline-code">/agent</span>, or <span class="inline-code">/magent</span> to force a workflow</li>
+        </ul>
+      </section>
 
-    <!-- Contributing -->
-    <section class="docs-section" id="contributing">
-      <h2>Contributing</h2>
-      <p>Warpsurf is an open source community project. Contributions are welcome!</p>
-      <ul>
-        <li>Check out the <a href="https://github.com/warpsurf/warpsurf" target="_blank">GitHub repository</a></li>
-        <li>Report bugs and security issues</li>
-        <li>Submit feature requests</li>
-      </ul>
-    </section>
+      <!-- Context & History -->
+      <section class="docs-section" id="context">
+        <h2>Context & History</h2>
+        <ul>
+          <li><strong>Tab Context</strong> — manually select open tabs to include as context</li>
+          <li><strong>Auto Tab Context</strong> — automatically use open tabs with configurable privacy controls</li>
+          <li><strong>Browser History</strong> — optionally include a summarized window of browsing history</li>
+          <li><strong>Session History</strong> — full chat history with session management and restore on reopen</li>
+          <li><strong>Favorites</strong> — save and organize most-used prompts with import/export support</li>
+        </ul>
+      </section>
 
+      <!-- Cost Management -->
+      <section class="docs-section" id="cost">
+        <h2>Cost Management</h2>
+        <ul>
+          <li><strong>Usage Tracking</strong> — real-time token and cost statistics broken down by role and model</li>
+          <li><strong>Task Estimation</strong> — preview estimated steps, duration, and cost before starting</li>
+          <li><strong>Live Pricing</strong> — optionally fetch live pricing data for accurate cost calculations</li>
+        </ul>
+      </section>
+
+      <!-- Model Compatibility -->
+      <section class="docs-section" id="models">
+        <h2>Model Compatibility</h2>
+        <p>Warpsurf is model-agnostic. Bring your own API keys from any of these providers:</p>
+        <ul>
+          <li>OpenAI (GPT-4o, o1, o3, etc.)</li>
+          <li>Anthropic (Claude)</li>
+          <li>Google (Gemini)</li>
+          <li>xAI (Grok — native integration)</li>
+          <li>OpenRouter (hundreds of models)</li>
+          <li>DeepSeek</li>
+          <li>Cerebras</li>
+          <li>Groq</li>
+          <li>Ollama (local models)</li>
+          <li>Any OpenAI-compatible API</li>
+        </ul>
+        <p>Each workflow role (chat, search, agent, navigator, planner, validator, multi-agent) can use a different model.</p>
+      </section>
+
+      <!-- Settings -->
+      <section class="docs-section" id="settings">
+        <h2>Settings</h2>
+        <p>The Options page provides granular control:</p>
+        <ul>
+          <li><strong>API Keys</strong> — add keys for each provider</li>
+          <li><strong>Models</strong> — select models for each workflow role</li>
+          <li><strong>Tabs</strong> — configure tab context behavior</li>
+          <li><strong>Web</strong> — URL firewall with allow/deny lists</li>
+          <li><strong>Voice</strong> — STT provider, model, and auto-submit</li>
+          <li><strong>Agent</strong> — planner/validator, vision, timeout, loop detection</li>
+          <li><strong>Pricing</strong> — toggle live pricing data</li>
+          <li><strong>Warnings</strong> — per-chat warnings and privacy notices</li>
+        </ul>
+        <p>Most settings can also be changed conversationally — say "Switch to Claude for all models" or "Turn on vision mode".</p>
+      </section>
+
+      <!-- Tips -->
+      <section class="docs-section" id="tips">
+        <h2>Tips</h2>
+        <p>These Chrome extensions can improve agent performance:</p>
+        <ul>
+          <li><a href="https://chromewebstore.google.com/detail/ad-blocker-stands-adblock/lgblnfidahcdcjddiepkckcfdhpknnjh" target="_blank">Ad Blocker</a> — removes ads and popups that can disrupt agents</li>
+        </ul>
+      </section>
+
+      <!-- Contributing -->
+      <section class="docs-section" id="contributing">
+        <h2>Contributing</h2>
+        <p>Warpsurf is an open source community project. Contributions are welcome!</p>
+        <ul>
+          <li>Check out the <a href="https://github.com/warpsurf/warpsurf" target="_blank">GitHub repository</a></li>
+          <li>Report bugs and security issues</li>
+          <li>Submit feature requests</li>
+        </ul>
+      </section>
+
+    </main>
   </div>
 
   <!-- Footer -->
   <footer>
     <div class="footer-content">
       <span class="footer-logo"><img src="images/favicon.png" alt="" class="footer-logo-icon">warpsurf</span>
-      <span class="footer-copyright">© 2025 Warpsurf. All rights reserved.</span>
+      <span class="footer-divider">—</span>
+      <span class="footer-copyright">&copy; 2026 Warpsurf</span>
     </div>
   </footer>
 
+  <!-- Scripts -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    lucide.createIcons();
+
+    function toggleTheme() {
+      var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      lucide.createIcons();
+    }
+
+    function toggleNav() {
+      document.querySelector('nav').classList.toggle('nav-open');
+    }
+
+    /* Active sidebar link tracking */
+    var sections = document.querySelectorAll('.docs-section');
+    var links = document.querySelectorAll('.sidebar-links a');
+
+    var sectionObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          links.forEach(function(l) { l.classList.remove('active'); });
+          var active = document.querySelector('.sidebar-links a[href="#' + entry.target.id + '"]');
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(function(s) { sectionObserver.observe(s); });
+  </script>
 </body>
 </html>
-
