@@ -1,1065 +1,453 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>warpsurf</title>
+  <title>warpsurf — AI browser copilot</title>
+  <meta name="description" content="An open-source AI browser copilot for Chrome. Chat, search, or deploy autonomous agents with voice and multi-agent orchestration.">
+  <meta property="og:title" content="warpsurf">
+  <meta property="og:description" content="An open-source AI browser copilot for Chrome.">
+  <meta property="og:image" content="images/warpsurf_vision.png">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/common.css">
+  <script>
+    (function() {
+      var s = localStorage.getItem('theme');
+      var p = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', s || p);
+    })();
+  </script>
   <style>
-    /* Hero Section */
+    /* --- Hero ----------------------------------------------------------- */
     .hero {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6rem 2rem 2rem;
-      background: 
-        radial-gradient(ellipse at top right, var(--pale-orange) 0%, transparent 50%),
-        radial-gradient(ellipse at bottom left, var(--pale-purple) 0%, transparent 50%),
-        var(--off-white);
+      padding: calc(var(--nav-height) + 2.5rem) 2rem 3rem;
       text-align: center;
       position: relative;
+      overflow: hidden;
     }
 
-    .hero-content {
-      max-width: 600px;
-      position: relative;
-      z-index: 10;
+    .hero-enso {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 380px;
+      height: 380px;
+      color: var(--border);
+      opacity: 0.5;
+      pointer-events: none;
     }
 
-    .hero-badge {
-      display: inline-block;
-      padding: 0.4rem 0.8rem;
-      background: var(--white);
-      border: 1px solid rgba(155, 125, 212, 0.15);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    [data-theme="dark"] .hero-enso { opacity: 0.25; }
+
+    .hero-content { position: relative; z-index: 2; max-width: 520px; }
+
+    .hero-logo-icon {
+      width: 64px;
+      height: 64px;
       margin-bottom: 1rem;
     }
 
     .hero h1 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-      background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .hero-logo-icon {
-      width: 80px;
-      height: 80px;
-      margin-top: 8px;
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: var(--text);
     }
 
     .hero p {
-      font-size: 1rem;
-      color: var(--text-muted);
-      max-width: 500px;
-      margin: 0 auto 1.25rem;
-      line-height: 1.5;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      max-width: 420px;
+      margin: 0 auto 2rem;
+      line-height: 1.65;
     }
 
     .hero-buttons {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.6rem;
       justify-content: center;
       flex-wrap: wrap;
     }
 
-    .chrome-icon {
-      width: 18px;
-      height: 18px;
+    /* --- Philosophy ----------------------------------------------------- */
+    .philosophy {
+      padding: 3rem 2rem 5rem;
+      border-top: 1px solid var(--border-subtle);
     }
 
-    /* Three Columns Section */
-    .three-columns {
-      padding: 2rem 2rem 3rem;
-      background: 
-        radial-gradient(ellipse at center, var(--pale-purple) 0%, transparent 60%),
-        var(--off-white);
-    }
-
-    .columns-grid {
+    .philosophy-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      max-width: 900px;
-      margin-left: auto;
-      margin-right: auto;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem 3rem;
     }
 
-    @media (max-width: 768px) {
-      .columns-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .column-box {
-      background: var(--white);
-      border-radius: 8px;
-      border: 1px solid rgba(155, 125, 212, 0.1);
-      overflow: hidden;
-    }
-
-    .column-header {
-      padding: 0.35rem 0.6rem;
-      font-weight: 600;
+    .philosophy-item h3 {
       font-size: 1.05rem;
-      text-align: center;
-      background: var(--pale-purple);
-      border-bottom: 1px solid rgba(155, 125, 212, 0.1);
+      margin-bottom: 0.5rem;
     }
 
-    .column-header-purple {
-      background: var(--pale-purple);
-      border-bottom: 1px solid rgba(155, 125, 212, 0.15);
+    .philosophy-item p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
     }
 
-    .column-header-blue {
-      background: #e3f2fd;
-      border-bottom: 1px solid rgba(66, 165, 245, 0.2);
+    .philosophy-wide { grid-column: 1 / -1; }
+
+    .philosophy-warning {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
     }
 
-    .column-header-green {
-      background: #e8f5e9;
-      border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+    @media (max-width: 640px) {
+      .philosophy-grid { grid-template-columns: 1fr; }
     }
 
-    .column-header-orange {
-      background: var(--pale-orange);
-      border-bottom: 1px solid rgba(229, 169, 138, 0.2);
-    }
-
-    .column-body {
-      padding: 0.75rem 1rem;
-    }
-
-    .column-body p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .column-box-wide {
-      grid-column: span 3;
-    }
-
-    @media (max-width: 768px) {
-      .column-box-wide {
-        grid-column: span 1;
-      }
-    }
-
-    /* Features Section */
-    .features {
-      padding: 2.5rem 2rem;
-      background: var(--white);
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-
-    @media (max-width: 900px) {
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 500px) {
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .feature-card {
-      border-radius: 6px;
-      background: var(--off-white);
-      border: 1px solid rgba(155, 125, 212, 0.08);
-      overflow: hidden;
-    }
-
-    .feature-header {
-      padding: 0.5rem 0.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      cursor: pointer;
-      transition: background 0.2s;
-      position: relative;
-    }
-
-    .feature-header:hover {
-      background: var(--pale-purple);
-    }
-
-    .feature-icon {
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-
-    .feature-card h3 {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .feature-toggle {
-      font-size: 0.5rem;
-      color: var(--text-muted);
-      transition: transform 0.2s;
-      position: absolute;
-      right: 0.5rem;
-    }
-
-    .feature-card.expanded .feature-toggle {
-      transform: rotate(180deg);
-    }
-
-    .feature-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-    }
-
-    .feature-card.expanded .feature-content {
-      max-height: 120px;
-    }
-
-    .feature-content p {
-      padding: 0 0.6rem 0.6rem;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    /* CTA Section */
-    .cta {
-      padding: 2.5rem 2rem;
-      background: 
-        radial-gradient(ellipse at center, var(--pale-orange) 0%, transparent 60%),
-        var(--off-white);
-    }
-
-    .cta-box {
-      max-width: 400px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .cta-box h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    .cta-buttons {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-    }
-
-    /* Swimming Fish - Top-down pool view */
-    .fish-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 150;
-      overflow: hidden;
-    }
-
-    .fish {
-      position: absolute;
-      opacity: 0.42;
-      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.06));
-      will-change: transform, left, top;
-    }
-
-    .fish svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Fluid, peaceful tail motion */
-    .fish .tail {
-      transform-origin: 50% 0%;
-      animation: tail-flow var(--tail-speed, 1.2s) ease-in-out infinite;
-    }
-
-    @keyframes tail-flow {
-      0% { transform: rotate(0deg) scaleX(1); }
-      25% { transform: rotate(3deg) scaleX(0.97); }
-      50% { transform: rotate(0deg) scaleX(1); }
-      75% { transform: rotate(-3deg) scaleX(0.97); }
-      100% { transform: rotate(0deg) scaleX(1); }
-    }
-
-    /* Feature grid for 10 items - 5 columns */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-    }
-
-    @media (max-width: 1100px) {
-      .features-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    @media (max-width: 768px) {
-      .features-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 500px) {
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-
-    /* Example Tasks Section */
-    .examples {
+    /* --- Demos ---------------------------------------------------------- */
+    .demos {
       padding: 6rem 2rem;
-      background: var(--white);
-    }
-
-    .examples-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.25rem;
-      margin-top: 3rem;
-    }
-
-    .example-card {
-      background: var(--off-white);
-      border: 1px solid rgba(155, 125, 212, 0.1);
-      border-radius: 16px;
-      padding: 1.5rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      transition: all 0.3s ease;
-    }
-
-    .example-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(155, 125, 212, 0.1);
-      border-color: var(--accent-purple);
-    }
-
-    .example-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .example-card p {
-      color: var(--text-dark);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    /* Providers Section */
-    .providers {
-      padding: 5rem 2rem;
-      background: 
-        radial-gradient(ellipse at top left, var(--pale-orange) 0%, transparent 50%),
-        var(--off-white);
-    }
-
-    .providers .section-header {
-      margin-bottom: 3rem;
-    }
-
-    .provider-logos {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 4rem;
-      flex-wrap: wrap;
-    }
-
-    .provider-logo {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      opacity: 0.7;
-      transition: opacity 0.3s ease;
-    }
-
-    .provider-logo:hover {
-      opacity: 1;
-    }
-
-    .provider-logo svg {
-      width: 48px;
-      height: 48px;
-    }
-
-    .provider-logo span {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    /* Demo Section */
-    .demo {
-      padding: 2.5rem 2rem;
-      background: 
-        radial-gradient(ellipse at bottom right, var(--pale-purple) 0%, transparent 50%),
-        var(--off-white);
+      border-top: 1px solid var(--border-subtle);
     }
 
     .demo-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-top: 1rem;
-      max-width: 900px;
-      margin-left: auto;
-      margin-right: auto;
+      gap: 1.5rem;
     }
 
-    @media (max-width: 700px) {
-      .demo-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .demo-card {
-      background: var(--white);
-      border: 1px solid rgba(155, 125, 212, 0.08);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .demo-card:hover {
-      box-shadow: 0 4px 12px rgba(155, 125, 212, 0.1);
-    }
-
-    .demo-gif {
+    .demo-item img {
       width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: var(--shadow-md);
       display: block;
     }
 
-    .demo-label {
-      padding: 0.5rem 0.75rem;
-      font-weight: 500;
-      color: var(--text-dark);
-      font-size: 0.75rem;
+    .demo-caption {
+      margin-top: 0.6rem;
+      font-size: 0.78rem;
+      color: var(--text-tertiary);
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.35rem;
+    }
+
+    .demo-caption svg {
+      width: 13px;
+      height: 13px;
+      color: var(--accent);
+      stroke-width: 1.75;
+    }
+
+    /* --- Features ------------------------------------------------------- */
+    .features {
+      padding: 6rem 2rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .feature-group { margin-bottom: 2rem; }
+
+    .feature-group-label {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-tertiary);
+      margin-bottom: 0.5rem;
+      padding-left: 0.15rem;
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 1.5rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+      transition: border-color var(--transition);
+    }
+
+    .feature-row::before {
+      content: '';
+      position: absolute;
+      left: -0.75rem;
+      top: 0.3rem;
+      bottom: 0.3rem;
+      width: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .feature-row:hover::before { opacity: 1; }
+    .feature-row:hover { border-color: var(--border); }
+
+    .feature-name {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 500;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .feature-name svg {
+      width: 14px;
+      height: 14px;
+      color: var(--accent);
+      stroke-width: 1.75;
+      flex-shrink: 0;
+    }
+
+    .feature-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    /* --- CTA ------------------------------------------------------------ */
+    .cta {
+      padding: 6rem 2rem;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .cta h2 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+
+    .cta-buttons {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
       flex-wrap: wrap;
     }
 
-    .demo-speed {
-      font-size: 0.6rem;
-      font-weight: 500;
-      background: var(--pale-purple);
-      color: var(--accent-purple);
-      padding: 0.15rem 0.4rem;
-      border-radius: 100px;
+    /* --- Fish ----------------------------------------------------------- */
+    .fish-container {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
     }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .hero {
-        padding: 5rem 1.5rem 1.5rem;
-      }
+    .fish {
+      position: absolute;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.04));
+      will-change: transform, left, top;
+    }
 
-      .three-columns, .demo, .features, .cta {
-        padding: 1.5rem;
+    .fish svg { width: 100%; height: 100%; }
+
+    .fish .tail {
+      transform-origin: 50% 0%;
+      animation: tail-flow var(--tail-speed, 1.4s) ease-in-out infinite;
+    }
+
+    @keyframes tail-flow {
+      0%   { transform: rotate(0deg) scaleX(1); }
+      25%  { transform: rotate(2.5deg) scaleX(0.98); }
+      50%  { transform: rotate(0deg) scaleX(1); }
+      75%  { transform: rotate(-2.5deg) scaleX(0.98); }
+      100% { transform: rotate(0deg) scaleX(1); }
+    }
+
+    [data-theme="dark"] .fish { filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
+
+    /* --- Responsive ----------------------------------------------------- */
+    @media (max-width: 768px) {
+      .hero { padding-bottom: 2.5rem; }
+      .hero h1 { font-size: 2.2rem; }
+      .philosophy, .demos, .features, .cta { padding: 4rem 1.5rem; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .feature-row {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Swimming Fish - Top-down pool view (randomized by JavaScript) -->
+
+  <!-- Fish -->
   <div class="fish-container" id="fish-container"></div>
-  
-  <script>
-    // Fish swimming with wrap-around movement
-    // Wait for page to fully load so we get accurate page dimensions
-    window.addEventListener('load', function() {
-      const container = document.getElementById('fish-container');
-      const numFish =20;
-      const fishData = [];
-      
-      const colors = [
-        { body: '#e5a98a', stripe: '#d4896a', highlight: '#f0c4a8' },
-        { body: '#a48cd0', stripe: '#8a70b8', highlight: '#c4b0e8' },
-        { body: '#d4a5b0', stripe: '#c08090', highlight: '#e8c8d0' },
-        { body: '#b49ddb', stripe: '#8a70b8', highlight: '#d4c4ed' },
-        { body: '#c9a0c9', stripe: '#a080a0', highlight: '#e0c8e0' },
-        { body: '#edb89e', stripe: '#d4896a', highlight: '#f5d4c0' },
-      ];
 
-      function createFishSVG(color) {
-        return `
-          <svg viewBox="0 0 30 50" fill="none">
-            <ellipse cx="15" cy="20" rx="10" ry="17" fill="${color.body}"/>
-            <ellipse cx="15" cy="18" rx="3" ry="11" fill="${color.stripe}" opacity="0.5"/>
-            <polygon class="tail" points="15,37 5,47 25,47" fill="${color.body}"/>
-            <ellipse cx="15" cy="6" rx="6" ry="4" fill="${color.highlight}" opacity="0.4"/>
-          </svg>
-        `;
-      }
-
-      // Get fixed page dimensions ONCE at load time
-      const bounds = {
-        width: document.documentElement.scrollWidth,
-        height: document.documentElement.scrollHeight
-      };
-      
-      const buffer = 80;
-
-      // Set container to exact page size
-      container.style.width = bounds.width + 'px';
-      container.style.height = bounds.height + 'px';
-
-      // Initialize fish across the ENTIRE page
-      for (let i = 0; i < numFish; i++) {
-        const size = 28 + Math.random() * 24;
-        const direction = Math.random() * 360;
-        const dirRad = direction * Math.PI / 180;
-        const baseSpeed = 0.3 + Math.random() * 0.4;
-        const tailSpeed = 1.0 + Math.random() * 1.0;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const opacity = 0.3 + Math.random() * 0.2;
-
-        const x = Math.random() * bounds.width;
-        const y = Math.random() * bounds.height;
-
-        const vx = Math.sin(dirRad) * baseSpeed;
-        const vy = -Math.cos(dirRad) * baseSpeed;
-
-        const fish = document.createElement('div');
-        fish.className = 'fish';
-        fish.innerHTML = createFishSVG(color);
-        fish.style.cssText = `
-          --tail-speed: ${tailSpeed}s;
-          width: ${size}px;
-          height: ${size * 1.5}px;
-          transform: rotate(${direction}deg);
-          opacity: ${opacity};
-          left: ${x}px;
-          top: ${y}px;
-        `;
-
-        container.appendChild(fish);
-
-        fishData.push({
-          el: fish,
-          x: x,
-          y: y,
-          vx: vx,
-          vy: vy,
-          size: size,
-          baseSpeed: baseSpeed,
-          direction: direction
-        });
-      }
-
-      // Food system
-      const attractionRadius = 300; // pixels - fish within this radius are attracted
-      const eatRadius = 8; // pixels - mouth must be close to food
-      const baseTurnSpeed = 0.02; // base turn speed
-      const activeFood = []; // track all food pieces
-      
-      function createFood(x, y) {
-        // Create small food pellet
-        const foodEl = document.createElement('div');
-        foodEl.className = 'fish-food';
-        foodEl.style.cssText = `
-          position: absolute;
-          left: ${x}px;
-          top: ${y}px;
-          width: 5px;
-          height: 5px;
-          background: #e8b868;
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-          z-index: 51;
-        `;
-        container.appendChild(foodEl);
-
-        // Add to active food list
-        const food = { x: x, y: y, el: foodEl };
-        activeFood.push(food);
-      }
-
-      function removeFood(food) {
-        const index = activeFood.indexOf(food);
-        if (index > -1) {
-          activeFood.splice(index, 1);
-          food.el.remove();
-        }
-      }
-
-      function getMouthPosition(fish) {
-        // Fish mouth is at the front (head)
-        const dirRad = fish.direction * Math.PI / 180;
-        const mouthOffset = fish.size * 0.7; // mouth at very front
-        return {
-          x: fish.x + Math.sin(dirRad) * mouthOffset,
-          y: fish.y - Math.cos(dirRad) * mouthOffset
-        };
-      }
-
-      function findNearestFood(fish) {
-        let nearest = null;
-        let nearestDist = Infinity;
-        
-        activeFood.forEach(food => {
-          const dx = food.x - fish.x;
-          const dy = food.y - fish.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          
-          if (dist < attractionRadius && dist < nearestDist) {
-            nearest = food;
-            nearestDist = dist;
-          }
-        });
-        
-        return nearest;
-      }
-
-      // Normalize angle to -180 to 180
-      function normalizeAngle(angle) {
-        while (angle > 180) angle -= 360;
-        while (angle < -180) angle += 360;
-        return angle;
-      }
-
-      // Add food on click (non-interactive areas only)
-      document.addEventListener('click', function(e) {
-        // Check if click was on an interactive element
-        const interactive = e.target.closest('a, button, input, select, textarea, [onclick], .btn');
-        if (interactive) return;
-        
-        // Get click position relative to page (not viewport)
-        const x = e.pageX;
-        const y = e.pageY;
-        
-        // Only place food within page bounds
-        if (x >= 0 && x <= bounds.width && y >= 0 && y <= bounds.height) {
-          createFood(x, y);
-        }
-      });
-
-      // Animation loop
-      let lastTime = performance.now();
-      
-      function animate(currentTime) {
-        // Cap deltaTime to prevent huge jumps when tab was inactive
-        const rawDelta = (currentTime - lastTime) / 16.67;
-        const deltaTime = Math.min(rawDelta, 2); // max 2 frames worth of movement
-        lastTime = currentTime;
-
-        fishData.forEach(fish => {
-          // Find nearest food and gradually turn towards it
-          const nearestFood = findNearestFood(fish);
-          if (nearestFood) {
-            const dx = nearestFood.x - fish.x;
-            const dy = nearestFood.y - fish.y;
-            const distToFood = Math.sqrt(dx * dx + dy * dy);
-            const targetAngle = Math.atan2(dx, -dy) * 180 / Math.PI;
-            
-            // Adaptive turn speed: faster when closer to food
-            // This prevents wide circling - fish tighten their turn as they approach
-            const proximityFactor = Math.max(0.5, 1 - (distToFood / attractionRadius));
-            const turnSpeed = baseTurnSpeed + (proximityFactor * 0.08);
-            
-            // Gradually turn towards food (smooth rotation)
-            let angleDiff = normalizeAngle(targetAngle - fish.direction);
-            fish.direction += angleDiff * turnSpeed * deltaTime;
-            fish.direction = normalizeAngle(fish.direction);
-            
-            // Update velocity based on current direction
-            // Slow down slightly when close for better accuracy
-            const dirRad = fish.direction * Math.PI / 180;
-            const speedFactor = distToFood < 50 ? 0.8 : 1.3;
-            const chaseSpeed = fish.baseSpeed * speedFactor;
-            fish.vx = Math.sin(dirRad) * chaseSpeed;
-            fish.vy = -Math.cos(dirRad) * chaseSpeed;
-            
-            // Update rotation
-            fish.el.style.transform = `rotate(${fish.direction}deg)`;
-          } else {
-            // Gradually return to normal speed when no food nearby
-            const currentSpeed = Math.sqrt(fish.vx * fish.vx + fish.vy * fish.vy);
-            if (currentSpeed > fish.baseSpeed * 1.01) {
-              const ratio = fish.baseSpeed / currentSpeed;
-              fish.vx += (fish.vx * ratio - fish.vx) * 0.01;
-              fish.vy += (fish.vy * ratio - fish.vy) * 0.01;
-              
-              // Update direction to match velocity
-              const dirRad = Math.atan2(fish.vx, -fish.vy);
-              fish.direction = dirRad * 180 / Math.PI;
-              fish.el.style.transform = `rotate(${fish.direction}deg)`;
-            }
-          }
-
-          // Update position
-          fish.x += fish.vx * deltaTime;
-          fish.y += fish.vy * deltaTime;
-
-          // Check if mouth passes over food
-          const mouth = getMouthPosition(fish);
-          for (let i = activeFood.length - 1; i >= 0; i--) {
-            const food = activeFood[i];
-            const dx = mouth.x - food.x;
-            const dy = mouth.y - food.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            
-            // Mouth must be close enough to eat
-            if (dist < eatRadius) {
-              removeFood(food);
-              break;
-            }
-          }
-
-          // Wrap around horizontally
-          if (fish.x > bounds.width + buffer) {
-            fish.x = -buffer;
-          } else if (fish.x < -buffer) {
-            fish.x = bounds.width + buffer;
-          }
-
-          // Wrap around vertically
-          if (fish.y > bounds.height + buffer) {
-            fish.y = -buffer;
-          } else if (fish.y < -buffer) {
-            fish.y = bounds.height + buffer;
-          }
-
-          // Apply position
-          fish.el.style.left = fish.x + 'px';
-          fish.el.style.top = fish.y + 'px';
-        });
-
-        requestAnimationFrame(animate);
-      }
-
-      requestAnimationFrame(animate);
-
-      // Update bounds on resize
-      window.addEventListener('resize', function() {
-        bounds.width = document.documentElement.scrollWidth;
-        bounds.height = document.documentElement.scrollHeight;
-        container.style.width = bounds.width + 'px';
-        container.style.height = bounds.height + 'px';
-      });
-    });
-
-    // Feature row expansion - expands all features on the same row
-    function toggleFeatureRow(clickedCard) {
-      const grid = clickedCard.closest('.features-grid');
-      const cards = Array.from(grid.querySelectorAll('.feature-card'));
-      const clickedIndex = cards.indexOf(clickedCard);
-      
-      // Get computed grid columns
-      const gridStyle = window.getComputedStyle(grid);
-      const columns = gridStyle.gridTemplateColumns.split(' ').length;
-      
-      // Calculate which row this card is in
-      const rowStart = Math.floor(clickedIndex / columns) * columns;
-      const rowEnd = Math.min(rowStart + columns, cards.length);
-      
-      // Check if we're expanding or collapsing
-      const isExpanding = !clickedCard.classList.contains('expanded');
-      
-      // Toggle all cards in this row
-      for (let i = rowStart; i < rowEnd; i++) {
-        if (isExpanding) {
-          cards[i].classList.add('expanded');
-        } else {
-          cards[i].classList.remove('expanded');
-        }
-      }
-    }
-  </script>
-
-  <!-- Navigation -->
+  <!-- Nav -->
   <nav>
     <a href="#" class="logo"><img src="images/favicon.png" alt="warpsurf" class="logo-icon">warpsurf</a>
+    <div class="nav-overlay" onclick="toggleNav()"></div>
     <div class="nav-links">
-      <a href="#demo">demos</a>
+      <a href="#demos">demos</a>
       <a href="#features">features</a>
       <a href="docs.html">documentation</a>
       <a href="https://github.com/warpsurf/warpsurf" target="_blank">github</a>
       <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank">chrome store</a>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i data-lucide="sun" class="theme-icon-sun"></i>
+        <i data-lucide="moon" class="theme-icon-moon"></i>
+      </button>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" style="display:flex;">
+        <i data-lucide="sun" class="theme-icon-sun"></i>
+        <i data-lucide="moon" class="theme-icon-moon"></i>
+      </button>
+      <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
     </div>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="hero">
-    <div class="hero-content">
-      <h1><img src="images/favicon.png" alt="" class="hero-logo-icon">warpsurf</h1>
-      <p>An open-source AI-powered browser copilot that runs locally in Chrome. Chat, search, or deploy agents to help you surf the web.</p>
+    <div class="hero-enso" aria-hidden="true">
+      <svg viewBox="0 0 200 200" fill="none">
+        <path d="M100 12 C152 12 188 48 188 100 C188 152 152 188 100 188 C48 188 12 152 12 100 C12 52 44 18 88 12" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="hero-content fade-in">
+      <img src="images/favicon.png" alt="" class="hero-logo-icon">
+      <h1>warpsurf</h1>
+      <p>An open-source AI browser copilot for Chrome. Chat, search the web, or deploy autonomous agents — with voice and multi-agent orchestration.</p>
       <div class="hero-buttons">
         <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank" class="btn btn-primary">
-          <svg class="chrome-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-            <circle cx="12" cy="12" r="4"/>
-          </svg>
-          Add to Chrome
+          <i data-lucide="chrome"></i> Add to Chrome
         </a>
-        <a href="https://github.com/warpsurf/warpsurf" target="_blank" class="btn btn-github">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-          Build from Source
+        <a href="https://github.com/warpsurf/warpsurf" target="_blank" class="btn">
+          <i data-lucide="github"></i> Source
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Three Columns Section -->
-  <section class="three-columns">
+  <!-- Philosophy -->
+  <section class="philosophy">
     <div class="container">
-      <div class="columns-grid">
-        <!-- Vision Column -->
-        <div class="column-box">
-          <div class="column-header column-header-purple">Vision</div>
-          <div class="column-body">
-            <p>The browser is the door to the internet—it should be open and accessible. Warpsurf provides a model-agnostic AI copilot that can make complex workflows easier while keeping your data local.</p>
-          </div>
+      <div class="philosophy-grid">
+        <div class="philosophy-item philosophy-wide fade-in">
+          <h3>Vision</h3>
+          <p>The browser is the door to the internet — it should be open and accessible. Warpsurf provides a model-agnostic AI copilot that makes complex workflows simple while keeping your data local. Bring your own API keys from any supported provider.</p>
         </div>
-
-        <!-- Aspiration Column -->
-        <div class="column-box">
-          <div class="column-header column-header-blue">Warpsurfing</div>
-          <div class="column-body">
-            <p>For browser automation to be useful, it needs to be fast—enabling "warpsurfing". We're not there yet, but this is the goal. With faster models and parallel execution, we can get there.</p>
-          </div>
+        <div class="philosophy-item fade-in stagger-1">
+          <h3>Speed</h3>
+          <p>For browser automation to be useful, it needs to be fast — enabling "warpsurfing". With intelligent routing, parallel multi-agent execution, and the fastest models available, we're getting there.</p>
         </div>
-
-        <!-- Community Column -->
-        <div class="column-box">
-          <div class="column-header column-header-green">Community</div>
-          <div class="column-body">
-            <p>Warpsurf has been built as an open source community tool open to contributions and critique. We want to grow the browser automation ecosystem by finding bugs, useful features, and new use cases.</p>
-          </div>
+        <div class="philosophy-item fade-in stagger-2">
+          <h3>Community</h3>
+          <p>Warpsurf has been built as an open source community tool — open to contributions and critique. We want to grow the browser automation ecosystem by finding bugs, useful features, and new use cases.</p>
         </div>
-
-        <!-- Safety Column -->
-        <div class="column-box column-box-wide">
-          <div class="column-header column-header-orange">Safety</div>
-          <div class="column-body">
-            <p>Warpsurf is a research project under active development. Browser automation carries inherent risks: agents may make mistakes and the web can be dangerous. Monitor agents while they work, use capped API keys, and use warpsurf at your own risk.</p>
+        <div class="philosophy-warning fade-in stagger-3">
+          <div class="warning-box">
+            <p><span class="warning-icon"><i data-lucide="triangle-alert"></i></span><strong>Safety:</strong> Warpsurf is a research project under active development. Browser automation carries inherent risks. Use the URL firewall, monitor agents in real-time, use capped API keys, and use warpsurf at your own risk.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Demo Section -->
-  <section class="demo" id="demo">
+  <!-- Demos -->
+  <section class="demos" id="demos">
     <div class="container">
-      <div class="section-header">
-        <h2>Demos</h2>
-      </div>
+      <h2 class="section-title fade-in">Demos</h2>
       <div class="demo-grid">
-        <div class="demo-card">
-          <img src="images/agent_2x.gif" alt="Agent workflow demo" class="demo-gif" loading="lazy">
-          <div class="demo-label">🤖 agent workflow <span class="demo-speed">2x playback speed</span></div>
+        <div class="demo-item fade-in">
+          <img src="images/agent.gif" alt="Agent workflow" loading="lazy">
+          <div class="demo-caption"><i data-lucide="bot"></i> agent workflow</div>
         </div>
-        <div class="demo-card">
-          <img src="images/magent_2x.gif" alt="Multi-agent workflow demo" class="demo-gif" loading="lazy">
-          <div class="demo-label">🤖🤖 multi-agent workflow <span class="demo-speed">2x playback speed</span></div>
+        <div class="demo-item fade-in stagger-1">
+          <img src="images/summarize.gif" alt="Summarize page" loading="lazy">
+          <div class="demo-caption"><i data-lucide="file-text"></i> summarize page</div>
         </div>
-        <div class="demo-card">
-          <img src="images/chat+searchx2.gif" alt="Chat and search workflow demo" class="demo-gif" loading="lazy">
-          <div class="demo-label">🧠🔍 chat & search <span class="demo-speed">2x playback speed</span></div>
+        <div class="demo-item fade-in stagger-2">
+          <img src="images/voice.gif" alt="Voice input" loading="lazy">
+          <div class="demo-caption"><i data-lucide="mic"></i> voice input</div>
         </div>
-        <div class="demo-card">
-          <img src="images/menu_2x.gif" alt="Panel and options menu demo" class="demo-gif" loading="lazy">
-          <div class="demo-label">⚙️ panel & options <span class="demo-speed">2x playback speed</span></div>
+        <div class="demo-item fade-in stagger-3">
+          <img src="images/tools.gif" alt="Conversational tools" loading="lazy">
+          <div class="demo-caption"><i data-lucide="wrench"></i> conversational tools</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Features Section -->
+  <!-- Features -->
   <section class="features" id="features">
     <div class="container">
-      <div class="section-header">
-        <h2>Features</h2>
+      <h2 class="section-title fade-in">Features</h2>
+
+      <div class="feature-group fade-in">
+        <div class="feature-group-label">Workflows</div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="route"></i><span>smart router</span></div><div class="feature-desc">queries are automatically triaged to the right workflow — chat, search, or agent</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="globe"></i><span>autonomous agent</span></div><div class="feature-desc">autonomous browsing agent that navigates and interacts with any webpage</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="users"></i><span>multi-agent</span></div><div class="feature-desc">orchestrate multiple agents in parallel for complex workflows and research tasks</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="search"></i><span>fast search</span></div><div class="feature-desc">low-latency web-augmented chat that finds and summarizes information from across the web</div></div>
       </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">🚦</div>
-            <h3>smart router</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>queries are automatically triaged to the right workflow—chat, search, or agent—for optimal results.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">🌐</div>
-            <h3>autonomous agent</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>navigates and interacts with any webpage on your behalf, completing complex multi-step tasks.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">👥</div>
-            <h3>multi-agent</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>orchestrate multiple agents in parallel for complex workflows and parallelisable research tasks.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">🔍</div>
-            <h3>fast search</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>low latency web-augmented chat that finds and summarizes information from across the web.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">🔒</div>
-            <h3>privacy first</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>runs locally in your browser. your data never leaves your machine—your browsing stays with you.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">⚡</div>
-            <h3>real-time monitor</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>watch agents work in real-time with full transparency. see every action and decision as it happens.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">📑</div>
-            <h3>tab management</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>agents operate using their own tab groups, keeping your browsing organized and separate.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">📈</div>
-            <h3>usage tracking</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>real-time token and cost statistics so you always know exactly what you're spending.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">💰</div>
-            <h3>live pricing</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>incorporate live pricing data from providers for accurate cost predictions.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">🧠</div>
-            <h3>conversational chat</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>natural chat interface powered by leading llms for quick questions.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">📜</div>
-            <h3>history context</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>optionally use your browser history to improve agent performance.</p>
-          </div>
-        </div>
-        <div class="feature-card">
-          <div class="feature-header" onclick="toggleFeatureRow(this.parentElement)">
-            <div class="feature-icon">⏱️</div>
-            <h3>task estimation</h3>
-            <span class="feature-toggle">▼</span>
-          </div>
-          <div class="feature-content">
-            <p>preview task duration and cost before the agent starts working.</p>
-          </div>
-        </div>
+
+      <div class="feature-group fade-in">
+        <div class="feature-group-label">Input</div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="mic"></i><span>voice input</span></div><div class="feature-desc">speech-to-text via OpenAI Whisper or Google Gemini, with optional auto-submit</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="paperclip"></i><span>attachments</span></div><div class="feature-desc">drag-and-drop or paste images, text files, PDFs, and JSON</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="mouse-pointer-click"></i><span>context menus</span></div><div class="feature-desc">right-click to explain text, summarize pages, or analyze images</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="wrench"></i><span>conversational tools</span></div><div class="feature-desc">change models, temperature, vision, and context tabs through natural language</div></div>
       </div>
+
+      <div class="feature-group fade-in">
+        <div class="feature-group-label">Control</div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="hand"></i><span>take control</span></div><div class="feature-desc">agents hand back control at critical junctures for your input</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="pause"></i><span>pause & resume</span></div><div class="feature-desc">pause running agents with optional instructions when resuming</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="message-square"></i><span>live follow-up</span></div><div class="feature-desc">send instructions to a running agent without stopping it</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="octagon-x"></i><span>emergency stop</span></div><div class="feature-desc">one-click stop for all running workflows</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="layout-dashboard"></i><span>agent manager</span></div><div class="feature-desc">dashboard with search, live tab previews, and one-click task launch</div></div>
+      </div>
+
+      <div class="feature-group fade-in">
+        <div class="feature-group-label">Intelligence</div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="app-window"></i><span>tab context</span></div><div class="feature-desc">manually select tabs or enable auto tab context with privacy controls</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="history"></i><span>history context</span></div><div class="feature-desc">optionally use browser history with configurable time windows</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="workflow"></i><span>workflow graph</span></div><div class="feature-desc">visual DAG of multi-agent subtasks with real-time status</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="map"></i><span>trajectory view</span></div><div class="feature-desc">timeline of agent actions grouped by site</div></div>
+      </div>
+
+      <div class="feature-group fade-in">
+        <div class="feature-group-label">Privacy & Management</div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="shield"></i><span>privacy first</span></div><div class="feature-desc">runs locally with URL firewall for allow/deny domain control</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="star"></i><span>favorites</span></div><div class="feature-desc">save, import, and reorder your most-used prompts</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="rotate-ccw"></i><span>session restore</span></div><div class="feature-desc">workflows persist and resume seamlessly when you reopen</div></div>
+
+      </div>
+
+      <div class="feature-group fade-in">
+        <div class="feature-group-label">Cost</div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="trending-up"></i><span>usage tracking</span></div><div class="feature-desc">real-time token and cost stats per session, role, and model</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="timer"></i><span>task estimation</span></div><div class="feature-desc">preview steps, duration, and cost before starting</div></div>
+        <div class="feature-row"><div class="feature-name"><i data-lucide="coins"></i><span>live pricing</span></div><div class="feature-desc">live pricing data for accurate cost predictions</div></div>
+      </div>
+
     </div>
   </section>
 
-  <!-- CTA Section -->
+  <!-- CTA -->
   <section class="cta">
-    <div class="cta-box">
+    <div class="container-narrow fade-in">
       <h2>Get Started</h2>
       <div class="cta-buttons">
         <a href="https://chromewebstore.google.com/detail/warpsurf/ekmohjijmhcdpgficcolmennloeljhod" target="_blank" class="btn btn-primary">
-          <svg class="chrome-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-            <circle cx="12" cy="12" r="4"/>
-          </svg>
-          Chrome
+          <i data-lucide="chrome"></i> Chrome
         </a>
-        <a href="docs.html" class="btn btn-docs">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
-          </svg>
-          Documentation
+        <a href="docs.html" class="btn">
+          <i data-lucide="book-open"></i> Documentation
         </a>
-        <a href="https://github.com/warpsurf/warpsurf" target="_blank" class="btn btn-github">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-          GitHub
+        <a href="https://github.com/warpsurf/warpsurf" target="_blank" class="btn">
+          <i data-lucide="github"></i> GitHub
         </a>
       </div>
     </div>
@@ -1067,12 +455,132 @@
 
   <!-- Footer -->
   <footer>
-    <div class="footer-content footer-centered">
+    <div class="footer-content">
       <span class="footer-logo"><img src="images/favicon.png" alt="" class="footer-logo-icon">warpsurf</span>
       <span class="footer-divider">—</span>
-      <span class="footer-copyright">© 2025 Warpsurf. All rights reserved.</span>
+      <span class="footer-copyright">&copy; 2026 Warpsurf</span>
     </div>
   </footer>
 
+  <!-- Scripts -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    lucide.createIcons();
+
+    /* Theme toggle */
+    function toggleTheme() {
+      var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+      lucide.createIcons();
+    }
+
+    /* Mobile nav */
+    function toggleNav() {
+      document.querySelector('nav').classList.toggle('nav-open');
+    }
+
+    /* Scroll animations */
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+
+    /* Fish — reduced, muted, zen */
+    window.addEventListener('load', function() {
+      var container = document.getElementById('fish-container');
+      var fishData = [];
+      var NUM = 8;
+
+      var colors = [
+        { body: '#9a9a90', stripe: '#8a8a80', highlight: '#b4b4ac' },
+        { body: '#8b5cf6', stripe: '#7c3aed', highlight: '#a78bfa' },
+        { body: '#7d9982', stripe: '#6b876f', highlight: '#9ab89f' },
+      ];
+
+      function svg(c) {
+        return '<svg viewBox="0 0 30 50" fill="none"><ellipse cx="15" cy="20" rx="10" ry="17" fill="'+c.body+'"/><ellipse cx="15" cy="18" rx="3" ry="11" fill="'+c.stripe+'" opacity="0.4"/><polygon class="tail" points="15,37 5,47 25,47" fill="'+c.body+'"/><ellipse cx="15" cy="6" rx="6" ry="4" fill="'+c.highlight+'" opacity="0.35"/></svg>';
+      }
+
+      var bw = document.documentElement.scrollWidth;
+      var bh = document.documentElement.scrollHeight;
+      container.style.width = bw + 'px';
+      container.style.height = bh + 'px';
+
+      for (var i = 0; i < NUM; i++) {
+        var size = 26 + Math.random() * 22;
+        var dir = Math.random() * 360;
+        var rad = dir * Math.PI / 180;
+        var spd = 0.2 + Math.random() * 0.3;
+        var ts = 1.2 + Math.random() * 1.0;
+        var col = colors[Math.floor(Math.random() * colors.length)];
+        var op = 0.12 + Math.random() * 0.12;
+        var x = Math.random() * bw, y = Math.random() * bh;
+
+        var el = document.createElement('div');
+        el.className = 'fish';
+        el.innerHTML = svg(col);
+        el.style.cssText = '--tail-speed:'+ts+'s;width:'+size+'px;height:'+(size*1.5)+'px;transform:rotate('+dir+'deg);opacity:'+op+';left:'+x+'px;top:'+y+'px;';
+        container.appendChild(el);
+
+        fishData.push({ el:el, x:x, y:y, vx:Math.sin(rad)*spd, vy:-Math.cos(rad)*spd, size:size, spd:spd, dir:dir });
+      }
+
+      var buf = 80, food = [];
+
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('a,button,input,select,textarea,[onclick],.btn')) return;
+        food.push({ x:e.pageX, y:e.pageY, el:function() {
+          var d = document.createElement('div');
+          d.style.cssText = 'position:absolute;left:'+e.pageX+'px;top:'+e.pageY+'px;width:4px;height:4px;background:var(--accent);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0.5;z-index:2;';
+          container.appendChild(d); return d;
+        }() });
+      });
+
+      var last = performance.now();
+      function tick(now) {
+        var dt = Math.min((now - last) / 16.67, 2); last = now;
+        fishData.forEach(function(f) {
+          var near = null, nd = Infinity;
+          food.forEach(function(fd) {
+            var dx = fd.x-f.x, dy = fd.y-f.y, d = Math.sqrt(dx*dx+dy*dy);
+            if (d < 250 && d < nd) { near = fd; nd = d; }
+          });
+
+          if (near) {
+            var dx = near.x-f.x, dy = near.y-f.y, ta = Math.atan2(dx,-dy)*180/Math.PI;
+            var pf = Math.max(0.5,1-(nd/250)), ts = 0.02+(pf*0.06);
+            var ad = ta-f.dir; while(ad>180)ad-=360; while(ad<-180)ad+=360;
+            f.dir += ad*ts*dt; while(f.dir>180)f.dir-=360; while(f.dir<-180)f.dir+=360;
+            var r = f.dir*Math.PI/180, sf = nd<40?0.7:1.2;
+            f.vx = Math.sin(r)*f.spd*sf; f.vy = -Math.cos(r)*f.spd*sf;
+            f.el.style.transform = 'rotate('+f.dir+'deg)';
+
+            var mo = f.size*0.7, mx = f.x+Math.sin(r)*mo, my = f.y-Math.cos(r)*mo;
+            if (Math.sqrt((mx-near.x)**2+(my-near.y)**2) < 8) {
+              var idx = food.indexOf(near);
+              if (idx>-1) { food.splice(idx,1); near.el.remove(); }
+            }
+          }
+
+          f.x += f.vx*dt; f.y += f.vy*dt;
+          if(f.x>bw+buf)f.x=-buf; if(f.x<-buf)f.x=bw+buf;
+          if(f.y>bh+buf)f.y=-buf; if(f.y<-buf)f.y=bh+buf;
+          f.el.style.left = f.x+'px'; f.el.style.top = f.y+'px';
+        });
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      window.addEventListener('resize', function() {
+        bw = document.documentElement.scrollWidth;
+        bh = document.documentElement.scrollHeight;
+        container.style.width = bw+'px'; container.style.height = bh+'px';
+      });
+    });
+  </script>
 </body>
 </html>
