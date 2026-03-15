@@ -9,6 +9,11 @@ var SHIPMENTS = {
     {
       "date": "2026-03-14",
       "feature": "Microsoft Edge compatibility",
+      "tweet": "https://x.com/JRobertsAI/status/2032852577927192580"
+    },
+    {
+      "date": "2026-03-15",
+      "feature": "Agent plan visualization",
       "tweet": ""
     }
   ]
