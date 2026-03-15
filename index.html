@@ -582,18 +582,24 @@
       var container = document.getElementById('shipping');
       if (!data || !container || !data.shipments.length) return;
 
+      function localKey(d) {
+        return d.getFullYear() + '-' +
+          ('0' + (d.getMonth() + 1)).slice(-2) + '-' +
+          ('0' + d.getDate()).slice(-2);
+      }
+
       var shipMap = {};
       data.shipments.forEach(function(s) { shipMap[s.date] = s; });
 
       var start = new Date(data.start + 'T00:00:00');
       var today = new Date();
       today.setHours(0, 0, 0, 0);
+      var todayKey = localKey(today);
 
       var streak = 0;
       var d = new Date(today);
       while (d >= start) {
-        var key = d.toISOString().slice(0, 10);
-        if (shipMap[key]) { streak++; d.setDate(d.getDate() - 1); }
+        if (shipMap[localKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
         else break;
       }
 
@@ -615,12 +621,13 @@
 
       var cursor = new Date(start);
       while (cursor <= today) {
-        var key = cursor.toISOString().slice(0, 10);
+        var key = localKey(cursor);
         var ship = shipMap[key];
+        var isToday = key === todayKey;
         var box = document.createElement('div');
         box.className = 'shipping-day';
         if (ship) box.classList.add('shipped');
-        if (key === today.toISOString().slice(0, 10)) box.classList.add('today');
+        if (isToday) box.classList.add('today');
 
         if (ship) {
           var tip = document.createElement('span');
@@ -635,7 +642,7 @@
             link.target = '_blank';
             link.rel = 'noopener';
             link.className = 'shipping-day shipped';
-            if (key === today.toISOString().slice(0, 10)) link.classList.add('today');
+            if (isToday) link.classList.add('today');
             link.appendChild(tip);
             row.appendChild(link);
             cursor.setDate(cursor.getDate() + 1);
