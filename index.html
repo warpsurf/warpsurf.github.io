@@ -598,6 +598,12 @@
 
       var streak = 0;
       var d = new Date(today);
+      if (shipMap[todayKey]) {
+        streak++;
+        d.setDate(d.getDate() - 1);
+      } else {
+        d.setDate(d.getDate() - 1);
+      }
       while (d >= start) {
         if (shipMap[localKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
         else break;
