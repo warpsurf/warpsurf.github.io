@@ -15,6 +15,11 @@ var SHIPMENTS = {
       "date": "2026-03-15",
       "feature": "Agent plan visualization",
       "tweet": ""
+    },
+    {
+      "date": "2026-03-16",
+      "feature": "Python SDK",
+      "tweet": ""
     }
   ]
 };
