@@ -14,12 +14,12 @@ var SHIPMENTS = {
     {
       "date": "2026-03-15",
       "feature": "Agent plan visualization",
-      "tweet": ""
+      "tweet": "https://x.com/JRobertsAI/status/2033316932619833847"
     },
     {
       "date": "2026-03-16",
       "feature": "Python SDK",
-      "tweet": ""
+      "tweet": "https://x.com/JRobertsAI/status/2033641077400379884"
     }
   ]
 };
