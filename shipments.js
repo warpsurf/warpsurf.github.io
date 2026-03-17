@@ -20,6 +20,11 @@ var SHIPMENTS = {
       "date": "2026-03-16",
       "feature": "Python SDK",
       "tweet": "https://x.com/JRobertsAI/status/2033641077400379884"
+    },
+    {
+      "date": "2026-03-17",
+      "feature": "Node SDK",
+      "tweet": ""
     }
   ]
 };
