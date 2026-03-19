@@ -30,6 +30,11 @@ var SHIPMENTS = {
       "date": "2026-03-18",
       "feature": "Python SDK Browserbase support",
       "tweet": "https://x.com/JRobertsAI/status/2034387990680686818"
+    },
+    {
+      "date": "2026-03-19",
+      "feature": "Node SDK Browserbase support",
+      "tweet": "https://x.com/JRobertsAI/status/2034760180957602112"
     }
   ]
 };
