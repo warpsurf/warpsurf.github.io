@@ -35,6 +35,11 @@ var SHIPMENTS = {
       "date": "2026-03-19",
       "feature": "Node SDK Browserbase support",
       "tweet": "https://x.com/JRobertsAI/status/2034760180957602112"
+    },
+    {
+      "date": "2026-03-20",
+      "feature": "Brave browser support",
+      "tweet": "https://x.com/JRobertsAI/status/2035021239245242478"
     }
   ]
 };
