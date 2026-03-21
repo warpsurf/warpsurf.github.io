@@ -40,6 +40,11 @@ var SHIPMENTS = {
       "date": "2026-03-20",
       "feature": "Brave browser support",
       "tweet": "https://x.com/JRobertsAI/status/2035021239245242478"
+    },
+    {
+      "date": "2026-03-21",
+      "feature": "Node Python Kernel support",
+      "tweet": "https://x.com/JRobertsAI/status/2035467035514187862"
     }
   ]
 };
