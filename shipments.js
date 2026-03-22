@@ -45,6 +45,11 @@ var SHIPMENTS = {
       "date": "2026-03-21",
       "feature": "Node Python Kernel support",
       "tweet": "https://x.com/JRobertsAI/status/2035467035514187862"
+    },
+    {
+      "date": "2026-03-22",
+      "feature": "Node Node Kernel support",
+      "tweet": ""
     }
   ]
 };
