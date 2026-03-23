@@ -1,6 +1,46 @@
 var SHIPMENTS = {
-  "start": "2026-03-13",
+  "start": "2026-03-01",
   "shipments": [
+    {
+      "date": "2026-03-02",
+      "feature": "Improved multi-agent system",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-03",
+      "feature": "Refined multi-agent roles",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-04",
+      "feature": "Agent trajectory deduplication",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-06",
+      "feature": "Screenshot animation fix",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-07",
+      "feature": "Prompt injection hardening",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-09",
+      "feature": "Updated docs",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-10",
+      "feature": "Settings refactor",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-11",
+      "feature": "UI redesign",
+      "tweet": ""
+    },
     {
       "date": "2026-03-13",
       "feature": "Search engine preference",
