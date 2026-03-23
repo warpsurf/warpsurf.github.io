@@ -71,53 +71,105 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
       background: var(--surface);
       border: 1px solid var(--border-subtle);
       border-radius: 10px;
       padding: 1rem 1.5rem;
     }
 
-    .shipping-title {
+    .shipping-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+    }
+
+    .shipping-key {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
       font-family: var(--font-sans);
       font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
       color: var(--text-tertiary);
     }
 
-    .shipping-streak-row {
+    .shipping-key-item {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.3rem;
     }
 
-    .shipping-streak-label {
+    .shipping-key-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    .shipping-key-swatch.swatch-update {
+      background: var(--accent);
+    }
+
+    .shipping-key-swatch.swatch-today {
+      background: #eab308;
+    }
+
+    .shipping-graph-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .shipping-months {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-left: 28px;
+    }
+
+    .shipping-month-label {
       font-family: var(--font-sans);
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      white-space: nowrap;
+      font-size: 0.6rem;
+      color: var(--text-tertiary);
+      text-align: left;
     }
 
-    .shipping-streak-label span {
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .shipping-row {
+    .shipping-grid-area {
       display: flex;
-      gap: 4px;
+      gap: 0;
+    }
+
+    .shipping-day-labels {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      width: 28px;
+      flex-shrink: 0;
+    }
+
+    .shipping-day-label {
+      font-family: var(--font-sans);
+      font-size: 0.58rem;
+      color: var(--text-tertiary);
+      display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
+    }
+
+    .shipping-grid {
+      display: flex;
+      gap: 3px;
+    }
+
+    .shipping-week {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
 
     .shipping-day {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
+      width: 13px;
+      height: 13px;
+      border-radius: 2px;
       background: var(--border-subtle);
       position: relative;
       transition: background var(--transition), transform var(--transition);
@@ -128,7 +180,7 @@
     }
 
     .shipping-day.today {
-      box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--accent);
+      background: #eab308;
     }
 
     a.shipping-day {
@@ -139,12 +191,13 @@
     .shipping-day.shipped:hover {
       transform: scale(1.3);
       cursor: pointer;
+      z-index: 20;
     }
 
     .shipping-day .shipping-tooltip {
       display: none;
       position: absolute;
-      top: calc(100% + 6px);
+      bottom: calc(100% + 6px);
       left: 50%;
       transform: translateX(-50%);
       background: var(--text);
@@ -160,12 +213,6 @@
 
     .shipping-day:hover .shipping-tooltip {
       display: block;
-    }
-
-    .shipping-label {
-      font-size: 0.65rem;
-      color: var(--text-tertiary);
-      margin-top: 0.15rem;
     }
 
     /* --- Philosophy ----------------------------------------------------- */
@@ -596,72 +643,146 @@
       today.setHours(0, 0, 0, 0);
       var todayKey = localKey(today);
 
-      var streak = 0;
-      var d = new Date(today);
-      if (shipMap[todayKey]) {
-        streak++;
-        d.setDate(d.getDate() - 1);
-      } else {
-        d.setDate(d.getDate() - 1);
-      }
-      while (d >= start) {
-        if (shipMap[localKey(d)]) { streak++; d.setDate(d.getDate() - 1); }
-        else break;
-      }
+      var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-      var title = document.createElement('div');
-      title.className = 'shipping-title';
-      title.textContent = 'Updates Shipped';
-      container.appendChild(title);
+      /* Header + key */
+      var header = document.createElement('div');
+      header.className = 'shipping-header';
+      header.innerHTML = '<span class="shipping-key">' +
+          '<span class="shipping-key-item"><span class="shipping-key-swatch swatch-update"></span>Update Shipped</span>' +
+          '<span class="shipping-key-item"><span class="shipping-key-swatch swatch-today"></span>Today</span>' +
+        '</span>';
+      container.appendChild(header);
 
-      var streakRow = document.createElement('div');
-      streakRow.className = 'shipping-streak-row';
-
-      var label = document.createElement('div');
-      label.className = 'shipping-streak-label';
-      label.innerHTML = 'Streak: <span>' + streak + '</span>';
-      streakRow.appendChild(label);
-
-      var row = document.createElement('div');
-      row.className = 'shipping-row';
-
+      /* Build week columns from start to today */
+      var weeks = [];
       var cursor = new Date(start);
+      var startDow = cursor.getDay(); /* day of week the start falls on */
+
+      /* First week may be partial — pad leading days */
+      var firstWeek = [];
+      for (var p = 0; p < startDow; p++) firstWeek.push(null);
+      weeks.push(firstWeek);
+
       while (cursor <= today) {
-        var key = localKey(cursor);
-        var ship = shipMap[key];
-        var isToday = key === todayKey;
-        var box = document.createElement('div');
-        box.className = 'shipping-day';
-        if (ship) box.classList.add('shipped');
-        if (isToday) box.classList.add('today');
-
-        if (ship) {
-          var tip = document.createElement('span');
-          tip.className = 'shipping-tooltip';
-          var parts = ship.date.split('-');
-          tip.textContent = parts[2] + '/' + parts[1] + ': ' + ship.feature;
-          box.appendChild(tip);
-
-          if (ship.tweet) {
-            var link = document.createElement('a');
-            link.href = ship.tweet;
-            link.target = '_blank';
-            link.rel = 'noopener';
-            link.className = 'shipping-day shipped';
-            if (isToday) link.classList.add('today');
-            link.appendChild(tip);
-            row.appendChild(link);
-            cursor.setDate(cursor.getDate() + 1);
-            continue;
-          }
-        }
-
-        row.appendChild(box);
+        var dow = cursor.getDay();
+        if (dow === 0 && weeks[weeks.length - 1].length > 0) weeks.push([]);
+        weeks[weeks.length - 1].push(new Date(cursor));
         cursor.setDate(cursor.getDate() + 1);
       }
 
-      streakRow.appendChild(row);
-      container.appendChild(streakRow);
+      /* Pad last week to 7 */
+      var lastWeek = weeks[weeks.length - 1];
+      while (lastWeek.length < 7) lastWeek.push(null);
+
+      /* Month labels row */
+      var monthRow = document.createElement('div');
+      monthRow.className = 'shipping-months';
+      var cellSize = 16; /* 13px box + 3px gap */
+
+      /* Track which months appear and at which week index */
+      var monthPositions = [];
+      var lastMonth = -1;
+      for (var wi = 0; wi < weeks.length; wi++) {
+        for (var di = 0; di < weeks[wi].length; di++) {
+          var date = weeks[wi][di];
+          if (date && date.getMonth() !== lastMonth) {
+            monthPositions.push({ month: date.getMonth(), week: wi });
+            lastMonth = date.getMonth();
+          }
+        }
+      }
+
+      for (var mi = 0; mi < monthPositions.length; mi++) {
+        var mp = monthPositions[mi];
+        var nextWeek = mi + 1 < monthPositions.length ? monthPositions[mi + 1].week : weeks.length;
+        var span = nextWeek - mp.week;
+        var lbl = document.createElement('span');
+        lbl.className = 'shipping-month-label';
+        lbl.style.width = (span * cellSize) + 'px';
+        lbl.textContent = monthNames[mp.month];
+        monthRow.appendChild(lbl);
+      }
+
+      /* Graph area: day labels + grid */
+      var graphWrap = document.createElement('div');
+      graphWrap.className = 'shipping-graph-wrap';
+      graphWrap.appendChild(monthRow);
+
+      var gridArea = document.createElement('div');
+      gridArea.className = 'shipping-grid-area';
+
+      /* Day-of-week labels */
+      var dayLabels = document.createElement('div');
+      dayLabels.className = 'shipping-day-labels';
+      for (var dl = 0; dl < 7; dl++) {
+        var dayLbl = document.createElement('div');
+        dayLbl.className = 'shipping-day-label';
+        dayLbl.style.height = cellSize + 'px';
+        /* Show Mon, Wed, Fri like GitHub */
+        dayLbl.textContent = (dl === 1 || dl === 3 || dl === 5) ? dayNames[dl] : '';
+        dayLabels.appendChild(dayLbl);
+      }
+      gridArea.appendChild(dayLabels);
+
+      /* Grid of weeks */
+      var grid = document.createElement('div');
+      grid.className = 'shipping-grid';
+
+      for (var wi = 0; wi < weeks.length; wi++) {
+        var weekCol = document.createElement('div');
+        weekCol.className = 'shipping-week';
+
+        for (var di = 0; di < weeks[wi].length; di++) {
+          var date = weeks[wi][di];
+
+          if (!date) {
+            var empty = document.createElement('div');
+            empty.className = 'shipping-day empty';
+            weekCol.appendChild(empty);
+            continue;
+          }
+
+          var key = localKey(date);
+          var ship = shipMap[key];
+
+          var isToday = key === todayKey;
+
+          var box = document.createElement('div');
+          box.className = 'shipping-day';
+          if (isToday) box.classList.add('today');
+          else if (ship) box.classList.add('shipped');
+
+          if (ship) {
+            var tip = document.createElement('span');
+            tip.className = 'shipping-tooltip';
+            var parts = ship.date.split('-');
+            tip.textContent = parts[2] + '/' + parts[1] + ': ' + ship.feature;
+            box.appendChild(tip);
+
+            if (ship.tweet) {
+              var link = document.createElement('a');
+              link.href = ship.tweet;
+              link.target = '_blank';
+              link.rel = 'noopener';
+              link.className = isToday ? 'shipping-day today' : 'shipping-day shipped';
+              link.appendChild(tip);
+              weekCol.appendChild(link);
+              continue;
+            }
+          }
+
+          weekCol.appendChild(box);
+        }
+
+        grid.appendChild(weekCol);
+      }
+
+      gridArea.appendChild(grid);
+      graphWrap.appendChild(gridArea);
+      container.appendChild(graphWrap);
 
     })();
 
