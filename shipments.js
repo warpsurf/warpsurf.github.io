@@ -90,6 +90,11 @@ var SHIPMENTS = {
       "date": "2026-03-22",
       "feature": "Node SDK Kernel support",
       "tweet": ""
+    },
+    {
+      "date": "2026-03-24",
+      "feature": "Inline chat and full view",
+      "tweet": ""
     }
   ]
 };
