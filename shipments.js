@@ -89,11 +89,16 @@ var SHIPMENTS = {
     {
       "date": "2026-03-22",
       "feature": "Node SDK Kernel support",
-      "tweet": ""
+      "tweet": "https://x.com/JRobertsAI/status/2035841028712800750"
     },
     {
       "date": "2026-03-24",
       "feature": "Inline chat and full view",
+      "tweet": ""
+    },
+    {
+      "date": "2026-03-27",
+      "feature": "Stability fixes to viewer switching",
       "tweet": ""
     }
   ]
