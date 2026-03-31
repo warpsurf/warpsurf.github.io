@@ -100,6 +100,11 @@ var SHIPMENTS = {
       "date": "2026-03-27",
       "feature": "Stability fixes to viewer switching",
       "tweet": ""
+    },
+    {
+      "date": "2026-03-31",
+      "feature": "Bug and stability fixes",
+      "tweet": ""
     }
   ]
 };
