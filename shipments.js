@@ -105,6 +105,16 @@ var SHIPMENTS = {
       "date": "2026-03-31",
       "feature": "Bug and stability fixes",
       "tweet": ""
+    },
+    {
+      "date": "2026-04-01",
+      "feature": "Fixes to multi-agent coordination",
+      "tweet": ""
+    },
+    {
+      "date": "2026-04-15",
+      "feature": "Added structured output for commodore and captain",
+      "tweet": ""
     }
   ]
 };
